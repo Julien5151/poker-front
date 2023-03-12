@@ -1,0 +1,31 @@
+<div class="flex h-full w-full flex-col items-center bg-gray-500">
+  <mat-form-field class="mt-4 w-40">
+    <mat-label>My name</mat-label>
+    <input matInput [formControl]="nameControl" />
+  </mat-form-field>
+  <div class="my-10 flex justify-center">
+    <button (click)="sendVote(card)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARD" mat-raised-button color="primary">{{ card }}</button>
+  </div>
+  <div class="w-[500px]">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+      <!-- Vote Column -->
+      <ng-container matColumnDef="vote">
+        <th mat-header-cell *matHeaderCellDef>Vote</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.vote ? (roomState.isHidden ? '??' : element.vote) : '' }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+  <div class="mt-10 flex">
+    <button (click)="toggleHide()" class="mx-2 text-xl" mat-raised-button color="accent">Hide / Display</button>
+    <button (click)="resetVotes()" class="mx-2 text-xl" mat-raised-button color="accent">Reset votes</button>
+  </div>
+</div>
