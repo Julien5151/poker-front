@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
     Vote.Surf,
   ];
 
-  private socket = new WebSocket(`ws://${environment.wsUrl}/web_socket`);
+  private socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
 
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
