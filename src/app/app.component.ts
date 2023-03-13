@@ -37,10 +37,11 @@ export class AppComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
 
-  public nameControl = new FormControl<string>('');
+  public nameControl = new FormControl<string>(this.getUserNameFromLocalStorage() ?? '');
   private subs: Array<Subscription> = [];
 
   public ngOnInit(): void {
+    this.handleSocketOpen();
     this.handleRoomUpdateMessages();
     this.subs.push(this.handleNameControlValueChanges());
   }
@@ -66,6 +67,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sendWebSocketMessage({ event: MessageType.UserNameUpdate, data: userName });
   }
 
+  private handleSocketOpen(): void {
+    this.socket.addEventListener('open', () => {
+      const userName = this.nameControl.value;
+      if (userName) this.sendUserName(userName);
+    });
+  }
+
   private handleRoomUpdateMessages(): void {
     this.socket.addEventListener('message', (event) => {
       const message: RoomMessage = JSON.parse(event.data);
@@ -83,11 +91,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private handleNameControlValueChanges(): Subscription {
     return this.nameControl.valueChanges.pipe(debounceTime(700)).subscribe((name) => {
-      if (name) this.sendUserName(name);
+      if (name) {
+        this.setUserNameToLocalStorage(name);
+        this.sendUserName(name);
+      }
     });
   }
 
   private sendWebSocketMessage(wsMessage: WebSocketMessage): void {
     this.socket.send(JSON.stringify(wsMessage));
+  }
+
+  private setUserNameToLocalStorage(userName: string): void {
+    globalThis.localStorage.setItem('userName', userName);
+  }
+
+  private getUserNameFromLocalStorage(): string | null {
+    return globalThis.localStorage.getItem('userName');
   }
 }
