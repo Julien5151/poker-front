@@ -24,8 +24,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
-  <div class="mt-10 flex">
-    <button (click)="toggleHide()" class="mx-2 text-xl" mat-raised-button color="accent">Hide / Display</button>
-    <button (click)="resetVotes()" class="mx-2 text-xl" mat-raised-button color="accent">Reset votes</button>
+  <div class="mt-10 flex w-[400px] justify-between">
+    <button (click)="toggleHide()" class="w-44 text-lg" mat-raised-button color="accent">{{ roomState.isHidden ? 'Display' : 'Hide' }} votes</button>
+    <button (click)="resetVotes()" class="text-lg" mat-raised-button color="accent">Reset votes</button>
   </div>
 </div>
