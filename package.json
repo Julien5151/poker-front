@@ -8,8 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
-    "gcp:deploy": "ng build && firebase deploy --only hosting"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
