@@ -1,10 +1,10 @@
 <div class="flex h-full w-full flex-col items-center bg-gray-500">
-  <div class="mt-4 flex w-[300px] items-start justify-between">
+  <div class="mt-4 flex w-[300px] items-center justify-between">
     <mat-form-field class="w-40">
       <mat-label>My name</mat-label>
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
-    <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="text-lg" mat-raised-button color="warn">Philippe !</button>
+    <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
   </div>
   <div class="my-10 flex justify-center">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
