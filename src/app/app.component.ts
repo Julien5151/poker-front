@@ -2,12 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MessageType, VoteValue } from './shared/enums';
+import { MessageType, UserEffect, VoteValue } from './shared/enums';
 import { RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
 
 export interface VoteElement {
   name: string;
   vote: Vote | null;
+  effect: UserEffect | null;
 }
 
 @Component({
@@ -63,6 +64,8 @@ export class AppComponent implements OnInit, OnDestroy {
       weight: 25,
     },
   ];
+  public readonly USER_EFFECT = UserEffect;
+  public isUserEffectPlaying = false;
 
   private socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
 
@@ -85,6 +88,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public sendVote(vote: VoteValue): void {
     this.sendWebSocketMessage({ event: MessageType.UserVoteUpdate, data: vote });
+  }
+
+  public sendPhilippe(): void {
+    this.sendWebSocketMessage({ event: MessageType.UserEffectUpdate, data: UserEffect.Philippe });
   }
 
   public toggleHide(): void {
@@ -111,6 +118,7 @@ export class AppComponent implements OnInit, OnDestroy {
       const message: RoomMessage = JSON.parse(event.data);
       this.roomState = message.data;
       this.updateDataSource();
+      this.updateUserEffects();
     });
   }
 
@@ -139,7 +147,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const newDataSource: Array<VoteElement> = [];
     // Fill data new data source
     this.roomState.users.forEach((user, index) => {
-      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote) ?? null });
+      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote) ?? null, effect: user.effect });
       // Init user name if necessary
       if (!this.nameControl.value && index === this.roomState.users.length - 1) {
         this.nameControl.setValue(user.name);
@@ -154,5 +162,9 @@ export class AppComponent implements OnInit, OnDestroy {
       });
     }
     this.dataSource = newDataSource;
+  }
+
+  private updateUserEffects(): void {
+    this.isUserEffectPlaying = this.roomState.users.some((user) => user.effect !== null);
   }
 }

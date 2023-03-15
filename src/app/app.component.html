@@ -1,8 +1,11 @@
 <div class="flex h-full w-full flex-col items-center bg-gray-500">
-  <mat-form-field class="mt-4 w-40">
-    <mat-label>My name</mat-label>
-    <input matInput [formControl]="nameControl" />
-  </mat-form-field>
+  <div class="mt-4 flex w-[300px] items-start justify-between">
+    <mat-form-field class="w-40">
+      <mat-label>My name</mat-label>
+      <input matInput [formControl]="nameControl" />
+    </mat-form-field>
+    <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="text-lg" mat-raised-button color="warn">Philippe !</button>
+  </div>
   <div class="my-10 flex justify-center">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
       {{ card.value }}
@@ -15,7 +18,7 @@
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element" class="relative">
           {{ element.name }}
-          <speech-bubble class="absolute left-[50%] -top-[90px] w-[100px]"></speech-bubble>
+          <speech-bubble *ngIf="element.effect === USER_EFFECT.Philippe" class="absolute left-[50%] -top-[90px] w-[100px]"></speech-bubble>
         </td>
       </ng-container>
       <!-- Vote Column -->
