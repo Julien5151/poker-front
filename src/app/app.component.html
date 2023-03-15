@@ -4,7 +4,9 @@
     <input matInput [formControl]="nameControl" />
   </mat-form-field>
   <div class="my-10 flex justify-center">
-    <button (click)="sendVote(card)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARD" mat-raised-button color="primary">{{ card }}</button>
+    <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
+      {{ card.value }}
+    </button>
   </div>
   <div class="w-[500px]">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
@@ -17,7 +19,7 @@
       <ng-container matColumnDef="vote">
         <th mat-header-cell *matHeaderCellDef>Vote</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.vote ? (roomState.isHidden ? '??' : element.vote) : '' }}
+          {{ element.vote ? (roomState.isHidden ? '??' : element.vote.value) : '' }}
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

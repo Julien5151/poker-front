@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MessageType, Vote } from './shared/enums';
-import { RoomMessage, RoomState, WebSocketMessage } from './shared/interfaces';
+import { MessageType, VoteValue } from './shared/enums';
+import { RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
 
 export interface VoteElement {
   name: string;
@@ -17,19 +17,51 @@ export interface VoteElement {
 })
 export class AppComponent implements OnInit, OnDestroy {
   public roomState: RoomState = { isHidden: true, users: [] };
-  public readonly VOTE_CARD = [
-    Vote.One,
-    Vote.Two,
-    Vote.Three,
-    Vote.Five,
-    Vote.Eight,
-    Vote.Thirteen,
-    Vote.TwentyOne,
-    Vote.Graive,
-    Vote.MiddleFinger,
-    Vote.Quezac,
-    Vote.Quit,
-    Vote.Surf,
+  public readonly VOTE_CARDS: Array<Vote> = [
+    {
+      value: VoteValue.One,
+      weight: 1,
+    },
+    {
+      value: VoteValue.Two,
+      weight: 2,
+    },
+    {
+      value: VoteValue.Three,
+      weight: 3,
+    },
+    {
+      value: VoteValue.Five,
+      weight: 5,
+    },
+    {
+      value: VoteValue.Eight,
+      weight: 8,
+    },
+    {
+      value: VoteValue.Thirteen,
+      weight: 13,
+    },
+    {
+      value: VoteValue.TwentyOne,
+      weight: 21,
+    },
+    {
+      value: VoteValue.Shrug,
+      weight: 22,
+    },
+    {
+      value: VoteValue.MiddleFinger,
+      weight: 23,
+    },
+    {
+      value: VoteValue.Graive,
+      weight: 24,
+    },
+    {
+      value: VoteValue.Surf,
+      weight: 25,
+    },
   ];
 
   private socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
@@ -51,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.socket.close();
   }
 
-  public sendVote(vote: Vote): void {
+  public sendVote(vote: VoteValue): void {
     this.sendWebSocketMessage({ event: MessageType.UserVoteUpdate, data: vote });
   }
 
@@ -78,19 +110,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.socket.addEventListener('message', (event) => {
       const message: RoomMessage = JSON.parse(event.data);
       this.roomState = message.data;
-      const newDataSource: Array<VoteElement> = [];
-      this.roomState.users.forEach((user, index) => {
-        newDataSource.push({ name: user.name, vote: user.vote });
-        if (!this.nameControl.value && index === this.roomState.users.length - 1) {
-          this.nameControl.setValue(user.name);
-        }
-      });
-      this.dataSource = newDataSource;
+      this.updateDataSource();
     });
   }
 
   private handleNameControlValueChanges(): Subscription {
-    return this.nameControl.valueChanges.pipe(debounceTime(700)).subscribe((name) => {
+    return this.nameControl.valueChanges.pipe(debounceTime(1000)).subscribe((name) => {
       if (name) {
         this.setUserNameToLocalStorage(name);
         this.sendUserName(name);
@@ -108,5 +133,26 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private getUserNameFromLocalStorage(): string | null {
     return globalThis.localStorage.getItem('userName');
+  }
+
+  private updateDataSource(): void {
+    const newDataSource: Array<VoteElement> = [];
+    // Fill data new data source
+    this.roomState.users.forEach((user, index) => {
+      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote) ?? null });
+      // Init user name if necessary
+      if (!this.nameControl.value && index === this.roomState.users.length - 1) {
+        this.nameControl.setValue(user.name);
+      }
+    });
+    // Sort table if votes are not hidden
+    if (!this.roomState.isHidden) {
+      newDataSource.sort((a, b) => {
+        const voteAWeight = a.vote?.weight ?? -1;
+        const voteBWeight = b.vote?.weight ?? -1;
+        return voteAWeight - voteBWeight;
+      });
+    }
+    this.dataSource = newDataSource;
   }
 }

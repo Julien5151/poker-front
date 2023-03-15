@@ -1,4 +1,4 @@
-export enum Vote {
+export enum VoteValue {
   One = '1',
   Two = '2',
   Three = '3',
@@ -8,8 +8,7 @@ export enum Vote {
   TwentyOne = '21',
   Graive = '🟥',
   MiddleFinger = '🖕',
-  Quezac = '🍾',
-  Quit = '👋',
+  Shrug = '🤷',
   Surf = '🏄',
 }
 

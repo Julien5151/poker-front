@@ -1,10 +1,15 @@
-import { MessageType, UserEffect, Vote } from './enums';
+import { MessageType, UserEffect, VoteValue } from './enums';
 
 export interface User {
   id: string;
   name: string;
-  vote: Vote | null;
+  vote: VoteValue | null;
   effect: UserEffect | null;
+}
+
+export interface Vote {
+  value: VoteValue;
+  weight: number;
 }
 
 export interface RoomState {
@@ -21,7 +26,7 @@ export interface RoomMessage {
 
 export interface UserVoteMessage {
   event: MessageType.UserVoteUpdate;
-  data: Vote;
+  data: VoteValue;
 }
 
 export interface UserNameMessage {
