@@ -2,3 +2,7 @@
 .mat-column-vote {
   @apply w-40 text-center text-lg;
 }
+
+td.mat-column-name {
+  overflow: visible;
+}

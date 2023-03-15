@@ -10,9 +10,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { AppComponent } from './app.component';
+import { SpeechBubbleComponent } from './components/speech-bubble/speech-bubble.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SpeechBubbleComponent],
   imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, MatButtonModule, MatTableModule, MatInputModule, ReactiveFormsModule],
   bootstrap: [AppComponent],
 })

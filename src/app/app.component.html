@@ -13,7 +13,10 @@
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        <td mat-cell *matCellDef="let element" class="relative">
+          {{ element.name }}
+          <speech-bubble class="absolute left-[50%] -top-[90px] w-[100px]"></speech-bubble>
+        </td>
       </ng-container>
       <!-- Vote Column -->
       <ng-container matColumnDef="vote">
