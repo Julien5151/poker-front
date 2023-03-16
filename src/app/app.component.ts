@@ -103,9 +103,15 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     myConfetti({
       particleCount: 100,
-      spread: 160,
-      // any other options from the global
-      // confetti function
+      spread: 70,
+      angle: 45,
+      origin: { x: 0, y: 1 },
+    });
+    myConfetti({
+      particleCount: 100,
+      spread: 70,
+      angle: 135,
+      origin: { x: 1, y: 1 },
     });
   }
 
