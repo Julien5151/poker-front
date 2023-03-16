@@ -173,7 +173,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private sendWebSocketMessage(wsMessage: WebSocketMessage): void {
     try {
       const stringifiedMessage = JSON.stringify(wsMessage);
-      this.socket.send(JSON.stringify(stringifiedMessage));
+      this.socket.send(stringifiedMessage);
     } catch (error) {
       console.error('Failed to stringify websocket message before sending it');
     }
