@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import * as confetti from 'canvas-confetti';
 import { debounceTime, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MessageType, UserEffect, VoteValue } from './shared/enums';
@@ -92,6 +93,20 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public sendPhilippe(): void {
     this.sendWebSocketMessage({ event: MessageType.UserEffectUpdate, data: UserEffect.Philippe });
+  }
+
+  public sendConfetti(): void {
+    const myCanvas = document.getElementById('myCanvas') as HTMLCanvasElement;
+    const myConfetti = confetti.create(myCanvas, {
+      resize: true,
+      useWorker: true,
+    });
+    myConfetti({
+      particleCount: 100,
+      spread: 160,
+      // any other options from the global
+      // confetti function
+    });
   }
 
   public toggleHide(): void {
