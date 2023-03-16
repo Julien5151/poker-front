@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import * as confetti from 'canvas-confetti';
 import { debounceTime, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { RoomEffect } from './enums/room-effect.enum';
 import { MessageType, UserEffect, VoteValue } from './shared/enums';
 import { RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
 
@@ -66,6 +67,8 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
   public readonly USER_EFFECT = UserEffect;
+  public readonly ROOM_EFFECT = RoomEffect;
+
   public isUserEffectPlaying = false;
 
   private socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
@@ -75,6 +78,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public nameControl = new FormControl<string>(this.getUserNameFromLocalStorage() ?? '');
   private subs: Array<Subscription> = [];
+
+  private readonly CONFETTI_FACTORY = confetti.create(document.getElementById('myCanvas') as HTMLCanvasElement, {
+    resize: true,
+    useWorker: true,
+  });
+  private readonly CONFETTI_BASIC_OPTIONS: confetti.Options = {
+    particleCount: 200,
+    spread: 70,
+  };
+
+  public roomEffect: RoomEffect | null = null;
 
   public ngOnInit(): void {
     this.handleSocketOpen();
@@ -95,24 +109,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sendWebSocketMessage({ event: MessageType.UserEffectUpdate, data: UserEffect.Philippe });
   }
 
-  public sendConfetti(): void {
-    const myCanvas = document.getElementById('myCanvas') as HTMLCanvasElement;
-    const myConfetti = confetti.create(myCanvas, {
-      resize: true,
-      useWorker: true,
-    });
-    myConfetti({
-      particleCount: 100,
-      spread: 70,
+  private sendConfetti(): void {
+    this.roomEffect = RoomEffect.Fanfare;
+    this.sendConfettis({
       angle: 45,
-      origin: { x: 0, y: 1 },
+      origin: { x: -0.1, y: 1.1 },
     });
-    myConfetti({
-      particleCount: 100,
-      spread: 70,
+    this.sendConfettis({
       angle: 135,
-      origin: { x: 1, y: 1 },
+      origin: { x: 1.1, y: 1.1 },
     });
+    setTimeout(() => {
+      this.roomEffect = null;
+    }, 5000);
   }
 
   public toggleHide(): void {
@@ -140,6 +149,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.roomState = message.data;
       this.updateDataSource();
       this.updateUserEffects();
+      this.handleRoomEffects();
     });
   }
 
@@ -187,5 +197,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private updateUserEffects(): void {
     this.isUserEffectPlaying = this.roomState.users.some((user) => user.effect !== null);
+  }
+
+  private handleRoomEffects(): void {
+    const usersWithVotes = this.roomState.users.filter((user) => user.vote);
+    const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote)).size === 1;
+    if (!this.roomState.isHidden && usersWithVotes.length >= 2 && usersHaveSameVote) {
+      this.sendConfetti();
+    }
+  }
+
+  private sendConfettis(options: confetti.Options): void {
+    this.CONFETTI_FACTORY({ ...this.CONFETTI_BASIC_OPTIONS, ...options });
   }
 }

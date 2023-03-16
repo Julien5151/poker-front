@@ -5,7 +5,6 @@
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
     <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
-    <button (click)="sendConfetti()" class="mb-6 text-lg" mat-raised-button color="warn">Confettis !</button>
   </div>
   <div class="flex flex-wrap justify-center sm:my-10">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
@@ -41,3 +40,4 @@
   </div>
 </div>
 <canvas id="myCanvas" class="pointer-events-none fixed top-0 left-0 z-10 h-full w-full"></canvas>
+<audio *ngIf="roomEffect === ROOM_EFFECT.Fanfare" class="hidden" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
