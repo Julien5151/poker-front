@@ -1,6 +1,13 @@
-.mat-column-name,
 .mat-column-vote {
-  @apply w-40 text-center text-lg;
+  @apply w-32 text-center text-lg;
+}
+
+.mat-column-name {
+  @apply min-w-[220px] max-w-[220px] text-center text-lg;
+
+  p {
+    margin-bottom: 0 !important;
+  }
 }
 
 td.mat-column-name {

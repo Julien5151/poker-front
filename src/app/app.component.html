@@ -1,23 +1,23 @@
-<div class="flex h-full w-full flex-col items-center bg-gray-500">
-  <div class="mt-4 flex w-[300px] items-center justify-between">
+<div class="flex h-full w-full min-w-[375px] flex-col items-center">
+  <div class="mt-4 flex flex-col items-center justify-between sm:w-80 sm:flex-row">
     <mat-form-field class="w-40">
       <mat-label>My name</mat-label>
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
     <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
   </div>
-  <div class="my-10 flex justify-center">
+  <div class="flex flex-wrap justify-center sm:my-10">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
       {{ card.value }}
     </button>
   </div>
-  <div class="w-[500px]">
+  <div class="mt-5">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element" class="relative">
-          {{ element.name }}
+          <p class="mb-0 overflow-hidden overflow-ellipsis whitespace-nowrap">{{ element.name }}</p>
           <speech-bubble *ngIf="element.effect === USER_EFFECT.Philippe" class="absolute left-[50%] -top-[90px] w-[100px]"></speech-bubble>
         </td>
       </ng-container>
@@ -32,8 +32,10 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
-  <div class="mt-10 flex w-[400px] justify-between">
-    <button (click)="toggleHide()" class="w-44 text-lg" mat-raised-button color="accent">{{ roomState.isHidden ? 'Display' : 'Hide' }} votes</button>
-    <button (click)="resetVotes()" class="text-lg" mat-raised-button color="accent">Reset votes</button>
+  <div class="mt-10 flex flex-col justify-between sm:w-[350px] sm:flex-row">
+    <button (click)="toggleHide()" class="my-2 w-44 text-lg" mat-raised-button color="accent">
+      {{ roomState.isHidden ? 'Display' : 'Hide' }} votes
+    </button>
+    <button (click)="resetVotes()" class="my-2 text-lg" mat-raised-button color="accent">Reset votes</button>
   </div>
 </div>
