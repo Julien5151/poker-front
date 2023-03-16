@@ -19,6 +19,7 @@ export enum MessageType {
   RoomUpdate = 'room_update',
   HiddenUpdate = 'hidden_update',
   ResetVotes = 'reset_votes',
+  Ping = 'ping',
 }
 
 export enum UserEffect {

@@ -5,7 +5,7 @@ import { debounceTime, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { RoomEffect } from './enums/room-effect.enum';
 import { MessageType, UserEffect, VoteValue } from './shared/enums';
-import { RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
+import { PingMessage, RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
 
 export interface VoteElement {
   name: string;
@@ -146,12 +146,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private handleRoomUpdateMessages(): void {
     this.socket.addEventListener('message', (event) => {
-      const message: RoomMessage = JSON.parse(event.data);
-      this.previousRoomState = this.roomState;
-      this.roomState = message.data;
-      this.updateDataSource();
-      this.updateUserEffects();
-      this.handleRoomEffects();
+      try {
+        const message: RoomMessage | PingMessage = JSON.parse(event.data);
+        if (message.event === MessageType.RoomUpdate) {
+          this.previousRoomState = this.roomState;
+          this.roomState = message.data;
+          this.updateDataSource();
+          this.updateUserEffects();
+          this.handleRoomEffects();
+        }
+      } catch (error) {
+        console.error('Failed to parse websocket message');
+      }
     });
   }
 
@@ -165,7 +171,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private sendWebSocketMessage(wsMessage: WebSocketMessage): void {
-    this.socket.send(JSON.stringify(wsMessage));
+    try {
+      const stringifiedMessage = JSON.stringify(wsMessage);
+      this.socket.send(JSON.stringify(stringifiedMessage));
+    } catch (error) {
+      console.error('Failed to stringify websocket message before sending it');
+    }
   }
 
   private setUserNameToLocalStorage(userName: string): void {
