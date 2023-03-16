@@ -19,6 +19,7 @@ export interface VoteElement {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private previousRoomState: RoomState = { isHidden: true, users: [] };
   public roomState: RoomState = { isHidden: true, users: [] };
   public readonly VOTE_CARDS: Array<Vote> = [
     {
@@ -146,6 +147,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private handleRoomUpdateMessages(): void {
     this.socket.addEventListener('message', (event) => {
       const message: RoomMessage = JSON.parse(event.data);
+      this.previousRoomState = this.roomState;
       this.roomState = message.data;
       this.updateDataSource();
       this.updateUserEffects();
@@ -202,7 +204,13 @@ export class AppComponent implements OnInit, OnDestroy {
   private handleRoomEffects(): void {
     const usersWithVotes = this.roomState.users.filter((user) => user.vote);
     const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote)).size === 1;
-    if (!this.roomState.isHidden && usersWithVotes.length >= 2 && usersHaveSameVote) {
+    if (
+      this.previousRoomState.isHidden &&
+      !this.roomState.isHidden &&
+      usersWithVotes.length === this.roomState.users.length &&
+      usersWithVotes.length >= 3 &&
+      usersHaveSameVote
+    ) {
       this.sendConfetti();
     }
   }
