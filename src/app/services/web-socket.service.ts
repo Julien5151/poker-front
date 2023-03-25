@@ -16,6 +16,7 @@ export class WebSocketService {
     this.socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
     this.handleOpen();
     this.handleMessage();
+    this.handleClose();
   }
 
   public closeWebSocket(): void {
@@ -29,13 +30,20 @@ export class WebSocketService {
   }
 
   private handleMessage(): void {
-    this.socket.addEventListener(SocketEvent.Message, (event: any) => {
+    this.socket.addEventListener(SocketEvent.Message, (event: MessageEvent) => {
       try {
         const message: RoomMessage | PingMessage = JSON.parse(event.data);
         this.socketEvent$.next({ type: SocketEvent.Message, message });
       } catch (error) {
         console.error('Failed to parse websocket message');
       }
+    });
+  }
+
+  private handleClose(): void {
+    this.socket.addEventListener(SocketEvent.Close, (event: CloseEvent) => {
+      console.log('Reason of web-socket closing :');
+      console.log(event.reason);
     });
   }
 
