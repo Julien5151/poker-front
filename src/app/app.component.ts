@@ -4,6 +4,7 @@ import { debounceTime, filter, Subject, takeUntil } from 'rxjs';
 import { RoomEffect } from './enums/room-effect.enum';
 import { SocketEvent } from './enums/socket-event.enum';
 import { ConfettiService } from './services/confetti.service';
+import { LocalStorageService } from './services/local-storage.service';
 import { RoomService } from './services/room.service';
 import { WebSocketService } from './services/web-socket.service';
 import { UserEffect, VoteValue } from './shared/enums';
@@ -79,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
   // Controls
-  public nameControl = new FormControl<string>(this.getUserNameFromLocalStorage() ?? '');
+  public nameControl = new FormControl<string>(this.localStorageService.getUserNameFromLocalStorage() ?? '');
   // Subscriptions
   private destroy$ = new Subject<boolean>();
 
@@ -91,6 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly webSocketService: WebSocketService,
     private readonly roomService: RoomService,
     private readonly confettiService: ConfettiService,
+    private readonly localStorageService: LocalStorageService,
   ) {}
 
   public ngOnInit(): void {
@@ -143,19 +145,10 @@ export class AppComponent implements OnInit, OnDestroy {
   private handleNameControlValueChanges(): void {
     this.nameControl.valueChanges.pipe(debounceTime(1000), takeUntil(this.destroy$)).subscribe((name) => {
       if (name) {
-        this.setUserNameToLocalStorage(name);
+        this.localStorageService.setUserNameToLocalStorage(name);
         this.webSocketService.sendUserNameUpdateMessage(name);
       }
     });
-  }
-
-  // To put in local storage service
-  private setUserNameToLocalStorage(userName: string): void {
-    globalThis.localStorage.setItem('userName', userName);
-  }
-
-  private getUserNameFromLocalStorage(): string | null {
-    return globalThis.localStorage.getItem('userName');
   }
 
   private updateDataSource(): void {
