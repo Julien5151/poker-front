@@ -4,8 +4,9 @@ import * as confetti from 'canvas-confetti';
 import { debounceTime, filter, Subject, takeUntil } from 'rxjs';
 import { RoomEffect } from './enums/room-effect.enum';
 import { SocketEvent } from './enums/socket-event.enum';
+import { RoomService } from './services/room.service';
 import { WebSocketService } from './services/web-socket.service';
-import { MessageType, UserEffect, VoteValue } from './shared/enums';
+import { UserEffect, VoteValue } from './shared/enums';
 import { RoomState, Vote } from './shared/interfaces';
 
 export interface VoteElement {
@@ -20,8 +21,7 @@ export interface VoteElement {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private previousRoomState: RoomState = { isHidden: true, users: [] };
-  public roomState: RoomState = { isHidden: true, users: [] };
+  // Constants
   public readonly VOTE_CARDS: Array<Vote> = [
     {
       value: VoteValue.One,
@@ -70,15 +70,24 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
   public readonly USER_EFFECT = UserEffect;
   public readonly ROOM_EFFECT = RoomEffect;
-
+  // Room
+  public roomState: RoomState = { isHidden: true, users: [] };
+  // Effects
   public isUserEffectPlaying = false;
-
+  public roomEffect: RoomEffect | null = null;
+  // Data table
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
-
+  // Controls
   public nameControl = new FormControl<string>(this.getUserNameFromLocalStorage() ?? '');
+  // Subscriptions
   private destroy$ = new Subject<boolean>();
 
+  // Service subjects
+  private socketEvent$ = this.webSocketService.socketEvent$.pipe(takeUntil(this.destroy$));
+  private roomStateEvent$ = this.roomService.roomStateEvent$.pipe(takeUntil(this.destroy$));
+
+  // Confetti => to put in a service
   private readonly CONFETTI_FACTORY = confetti.create(document.getElementById('myCanvas') as HTMLCanvasElement, {
     resize: true,
     useWorker: true,
@@ -88,12 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
     spread: 70,
   };
 
-  public roomEffect: RoomEffect | null = null;
-
-  // Service subjects
-  private socketEvent$ = this.webSocketService.socketEvent$.pipe(takeUntil(this.destroy$));
-
-  constructor(private readonly webSocketService: WebSocketService) {}
+  constructor(private readonly webSocketService: WebSocketService, private readonly roomService: RoomService) {}
 
   public ngOnInit(): void {
     this.webSocketService.initWebSocket();
@@ -147,15 +151,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private handleRoomUpdateMessages(): void {
-    this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Message)).subscribe((event) => {
-      const message = event.message;
-      if (message?.event === MessageType.RoomUpdate) {
-        this.previousRoomState = this.roomState;
-        this.roomState = message.data;
-        this.updateDataSource();
-        this.updateUserEffects();
-        this.handleRoomEffects();
-      }
+    this.roomStateEvent$.subscribe((roomState) => {
+      this.roomState = roomState;
+      this.updateDataSource();
+      this.updateUserEffects();
+      this.handleRoomEffects();
     });
   }
 
@@ -205,7 +205,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const usersWithVotes = this.roomState.users.filter((user) => user.vote);
     const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote)).size === 1;
     if (
-      this.previousRoomState.isHidden &&
+      this.roomService.previousRoomState.isHidden &&
       !this.roomState.isHidden &&
       usersWithVotes.length === this.roomState.users.length &&
       usersWithVotes.length >= 3 &&
