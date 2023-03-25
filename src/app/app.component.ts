@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import * as confetti from 'canvas-confetti';
 import { debounceTime, filter, Subject, takeUntil } from 'rxjs';
 import { RoomEffect } from './enums/room-effect.enum';
 import { SocketEvent } from './enums/socket-event.enum';
+import { ConfettiService } from './services/confetti.service';
 import { RoomService } from './services/room.service';
 import { WebSocketService } from './services/web-socket.service';
 import { UserEffect, VoteValue } from './shared/enums';
@@ -87,17 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private socketEvent$ = this.webSocketService.socketEvent$.pipe(takeUntil(this.destroy$));
   private roomStateEvent$ = this.roomService.roomStateEvent$.pipe(takeUntil(this.destroy$));
 
-  // Confetti => to put in a service
-  private readonly CONFETTI_FACTORY = confetti.create(document.getElementById('myCanvas') as HTMLCanvasElement, {
-    resize: true,
-    useWorker: true,
-  });
-  private readonly CONFETTI_BASIC_OPTIONS: confetti.Options = {
-    particleCount: 200,
-    spread: 70,
-  };
-
-  constructor(private readonly webSocketService: WebSocketService, private readonly roomService: RoomService) {}
+  constructor(
+    private readonly webSocketService: WebSocketService,
+    private readonly roomService: RoomService,
+    private readonly confettiService: ConfettiService,
+  ) {}
 
   public ngOnInit(): void {
     this.webSocketService.initWebSocket();
@@ -128,21 +122,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.webSocketService.sendResetVotesMessage();
   }
 
-  private sendConfetti(): void {
-    this.roomEffect = RoomEffect.Fanfare;
-    this.sendConfettis({
-      angle: 45,
-      origin: { x: -0.1, y: 1.1 },
-    });
-    this.sendConfettis({
-      angle: 135,
-      origin: { x: 1.1, y: 1.1 },
-    });
-    setTimeout(() => {
-      this.roomEffect = null;
-    }, 5000);
-  }
-
+  // Web socket handlers
   private handleSocketOpen(): void {
     this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Open)).subscribe(() => {
       const userName = this.nameControl.value;
@@ -159,6 +139,7 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Control handlers
   private handleNameControlValueChanges(): void {
     this.nameControl.valueChanges.pipe(debounceTime(1000), takeUntil(this.destroy$)).subscribe((name) => {
       if (name) {
@@ -168,6 +149,7 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  // To put in local storage service
   private setUserNameToLocalStorage(userName: string): void {
     globalThis.localStorage.setItem('userName', userName);
   }
@@ -215,7 +197,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  private sendConfettis(options: confetti.Options): void {
-    this.CONFETTI_FACTORY({ ...this.CONFETTI_BASIC_OPTIONS, ...options });
+  private sendConfetti(): void {
+    this.roomEffect = RoomEffect.Fanfare;
+    this.confettiService.sendConfettisFromBottomCorners();
+    setTimeout(() => {
+      this.roomEffect = null;
+    }, 5000);
   }
 }
