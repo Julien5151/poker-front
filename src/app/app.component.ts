@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import * as confetti from 'canvas-confetti';
-import { debounceTime, Subscription } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { debounceTime, filter, Subject, takeUntil } from 'rxjs';
 import { RoomEffect } from './enums/room-effect.enum';
+import { SocketEvent } from './enums/socket-event.enum';
+import { WebSocketService } from './services/web-socket.service';
 import { MessageType, UserEffect, VoteValue } from './shared/enums';
-import { PingMessage, RoomMessage, RoomState, Vote, WebSocketMessage } from './shared/interfaces';
+import { RoomState, Vote } from './shared/interfaces';
 
 export interface VoteElement {
   name: string;
@@ -72,13 +73,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public isUserEffectPlaying = false;
 
-  private socket = new WebSocket(`${environment.prod ? 'wss' : 'ws'}://${environment.wsUrl}/web_socket`);
-
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
 
   public nameControl = new FormControl<string>(this.getUserNameFromLocalStorage() ?? '');
-  private subs: Array<Subscription> = [];
+  private destroy$ = new Subject<boolean>();
 
   private readonly CONFETTI_FACTORY = confetti.create(document.getElementById('myCanvas') as HTMLCanvasElement, {
     resize: true,
@@ -91,23 +90,38 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public roomEffect: RoomEffect | null = null;
 
+  // Service subjects
+  private socketEvent$ = this.webSocketService.socketEvent$.pipe(takeUntil(this.destroy$));
+
+  constructor(private readonly webSocketService: WebSocketService) {}
+
   public ngOnInit(): void {
+    this.webSocketService.initWebSocket();
     this.handleSocketOpen();
     this.handleRoomUpdateMessages();
-    this.subs.push(this.handleNameControlValueChanges());
+    this.handleNameControlValueChanges();
   }
 
   public ngOnDestroy(): void {
-    this.subs.forEach((sub) => sub.unsubscribe());
-    this.socket.close();
+    this.destroy$.next(true);
+    this.webSocketService.closeWebSocket();
   }
 
+  // UI event handlers
   public sendVote(vote: VoteValue): void {
-    this.sendWebSocketMessage({ event: MessageType.UserVoteUpdate, data: vote });
+    this.webSocketService.sendVoteMessage(vote);
   }
 
   public sendPhilippe(): void {
-    this.sendWebSocketMessage({ event: MessageType.UserEffectUpdate, data: UserEffect.Philippe });
+    this.webSocketService.sendUserEffectMessage(UserEffect.Philippe);
+  }
+
+  public toggleHide(): void {
+    this.webSocketService.sendToggleHideMessage();
+  }
+
+  public resetVotes(): void {
+    this.webSocketService.sendResetVotesMessage();
   }
 
   private sendConfetti(): void {
@@ -125,58 +139,33 @@ export class AppComponent implements OnInit, OnDestroy {
     }, 5000);
   }
 
-  public toggleHide(): void {
-    this.sendWebSocketMessage({ event: MessageType.HiddenUpdate });
-  }
-
-  public resetVotes(): void {
-    this.sendWebSocketMessage({ event: MessageType.ResetVotes });
-  }
-
-  private sendUserName(userName: string): void {
-    this.sendWebSocketMessage({ event: MessageType.UserNameUpdate, data: userName });
-  }
-
   private handleSocketOpen(): void {
-    this.socket.addEventListener('open', () => {
+    this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Open)).subscribe(() => {
       const userName = this.nameControl.value;
-      if (userName) this.sendUserName(userName);
+      if (userName) this.webSocketService.sendUserNameUpdateMessage(userName);
     });
   }
 
   private handleRoomUpdateMessages(): void {
-    this.socket.addEventListener('message', (event) => {
-      try {
-        const message: RoomMessage | PingMessage = JSON.parse(event.data);
-        if (message.event === MessageType.RoomUpdate) {
-          this.previousRoomState = this.roomState;
-          this.roomState = message.data;
-          this.updateDataSource();
-          this.updateUserEffects();
-          this.handleRoomEffects();
-        }
-      } catch (error) {
-        console.error('Failed to parse websocket message');
+    this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Message)).subscribe((event) => {
+      const message = event.message;
+      if (message?.event === MessageType.RoomUpdate) {
+        this.previousRoomState = this.roomState;
+        this.roomState = message.data;
+        this.updateDataSource();
+        this.updateUserEffects();
+        this.handleRoomEffects();
       }
     });
   }
 
-  private handleNameControlValueChanges(): Subscription {
-    return this.nameControl.valueChanges.pipe(debounceTime(1000)).subscribe((name) => {
+  private handleNameControlValueChanges(): void {
+    this.nameControl.valueChanges.pipe(debounceTime(1000), takeUntil(this.destroy$)).subscribe((name) => {
       if (name) {
         this.setUserNameToLocalStorage(name);
-        this.sendUserName(name);
+        this.webSocketService.sendUserNameUpdateMessage(name);
       }
     });
-  }
-
-  private sendWebSocketMessage(wsMessage: WebSocketMessage): void {
-    try {
-      const stringifiedMessage = JSON.stringify(wsMessage);
-      this.socket.send(stringifiedMessage);
-    } catch (error) {
-      console.error('Failed to stringify websocket message before sending it');
-    }
   }
 
   private setUserNameToLocalStorage(userName: string): void {
