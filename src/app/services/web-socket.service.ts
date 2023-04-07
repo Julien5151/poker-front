@@ -17,7 +17,6 @@ export class WebSocketService {
     this.handleOpen();
     this.handleMessage();
     this.handleClose();
-    this.handleError();
   }
 
   public closeWebSocket(): void {
@@ -38,12 +37,6 @@ export class WebSocketService {
       } catch (error) {
         console.error('Failed to parse websocket message');
       }
-    });
-  }
-
-  private handleError(): void {
-    this.socket.addEventListener(SocketEvent.Error, () => {
-      this.initWebSocket();
     });
   }
 
