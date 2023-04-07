@@ -17,6 +17,7 @@ export class WebSocketService {
     this.handleOpen();
     this.handleMessage();
     this.handleClose();
+    this.handleError();
   }
 
   public closeWebSocket(): void {
@@ -40,10 +41,15 @@ export class WebSocketService {
     });
   }
 
+  private handleError(): void {
+    this.socket.addEventListener(SocketEvent.Error, () => {
+      this.initWebSocket();
+    });
+  }
+
   private handleClose(): void {
-    this.socket.addEventListener(SocketEvent.Close, (event: CloseEvent) => {
-      console.log('Reason of web-socket closing :');
-      console.log(event.reason);
+    this.socket.addEventListener(SocketEvent.Close, () => {
+      this.initWebSocket();
     });
   }
 
