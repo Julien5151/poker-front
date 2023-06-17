@@ -1,7 +1,7 @@
 {
   "name": "Poker Philippe",
   "short_name": "Poker Philippe",
-  "theme_color": "#7d239e",
+  "theme_color": "#6b727f",
   "background_color": "#6b727f",
   "display": "fullscreen",
   "scope": "./",
