@@ -1,27 +1,27 @@
-import { MessageType, UserEffect, VoteValue } from './enums';
+import { MessageType } from '../enums/message-type.enum';
+import { UserEffect } from '../enums/user-effect.enum';
+import { VoteValue } from '../enums/vote-value.enum';
+import { RoomName } from '../types/room-name.type';
+import { RoomState } from './room-state.interface';
 
-export interface User {
-  id: string;
-  name: string;
-  vote: VoteValue | null;
-  effect: UserEffect | null;
-}
-
-export interface Vote {
-  value: VoteValue;
-  weight: number;
-}
-
-export interface RoomState {
-  users: User[];
-  isHidden: boolean;
-}
-
-export type WebSocketMessage = RoomMessage | UserVoteMessage | UserNameMessage | UserEffectMessage | HiddenMessage | ResetVotesMessage | PingMessage;
+export type WebSocketMessage =
+  | RoomMessage
+  | UserJoinRoomMessage
+  | UserVoteMessage
+  | UserNameMessage
+  | UserEffectMessage
+  | HiddenMessage
+  | ResetVotesMessage
+  | PingMessage;
 
 export interface RoomMessage {
   event: MessageType.RoomUpdate;
   data: RoomState;
+}
+
+export interface UserJoinRoomMessage {
+  event: MessageType.UserJoinRoom;
+  data: RoomName;
 }
 
 export interface UserVoteMessage {

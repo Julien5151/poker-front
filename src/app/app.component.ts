@@ -1,14 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, filter, Subject, takeUntil } from 'rxjs';
+import { Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { RoomEffect } from './enums/room-effect.enum';
 import { SocketEvent } from './enums/socket-event.enum';
 import { ConfettiService } from './services/confetti.service';
 import { LocalStorageService } from './services/local-storage.service';
 import { RoomService } from './services/room.service';
 import { WebSocketService } from './services/web-socket.service';
-import { UserEffect, VoteValue } from './shared/enums';
-import { RoomState, Vote } from './shared/interfaces';
+import { UserEffect } from './shared/enums/user-effect.enum';
+import { VoteValue } from './shared/enums/vote-value.enum';
+import { RoomState } from './shared/interfaces/room-state.interface';
+import { Vote } from './shared/interfaces/vote.interface';
+import { VOTE_VALUE_WEIGHT_MAP } from './shared/maps/vote.map';
 
 export interface VoteElement {
   name: string;
@@ -26,53 +29,53 @@ export class AppComponent implements OnInit, OnDestroy {
   public readonly VOTE_CARDS: Array<Vote> = [
     {
       value: VoteValue.One,
-      weight: 1,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.One],
     },
     {
       value: VoteValue.Two,
-      weight: 2,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Two],
     },
     {
       value: VoteValue.Three,
-      weight: 3,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Three],
     },
     {
       value: VoteValue.Five,
-      weight: 5,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Five],
     },
     {
       value: VoteValue.Eight,
-      weight: 8,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Eight],
     },
     {
       value: VoteValue.Thirteen,
-      weight: 13,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Thirteen],
     },
     {
       value: VoteValue.TwentyOne,
-      weight: 21,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.TwentyOne],
     },
     {
       value: VoteValue.Shrug,
-      weight: 22,
-    },
-    {
-      value: VoteValue.MiddleFinger,
-      weight: 23,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Shrug],
     },
     {
       value: VoteValue.Graive,
-      weight: 24,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Graive],
+    },
+    {
+      value: VoteValue.MiddleFinger,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.MiddleFinger],
     },
     {
       value: VoteValue.Surf,
-      weight: 25,
+      weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Surf],
     },
   ];
   public readonly USER_EFFECT = UserEffect;
   public readonly ROOM_EFFECT = RoomEffect;
   // Room
-  public roomState: RoomState = { isHidden: true, users: [] };
+  public roomState: RoomState | null = null;
   // Effects
   public isUserEffectPlaying = false;
   public roomEffect: RoomEffect | null = null;
@@ -127,6 +130,9 @@ export class AppComponent implements OnInit, OnDestroy {
   // Web socket handlers
   private handleSocketOpen(): void {
     this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Open)).subscribe(() => {
+      // TO DO : REWORK INIT OF ROOM
+      const initialRoom = `philippe_${Math.floor(Math.random() * 100000)}-room`;
+      this.webSocketService.sendUserJoinRoomMessage(initialRoom);
       const userName = this.nameControl.value;
       if (userName) this.webSocketService.sendUserNameUpdateMessage(userName);
     });
@@ -155,7 +161,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const newDataSource: Array<VoteElement> = [];
     // Fill data new data source
     this.roomState.users.forEach((user, index) => {
-      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote) ?? null, effect: user.effect });
+      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote?.value) ?? null, effect: user.effect });
       // Init user name if necessary
       if (!this.nameControl.value && index === this.roomState.users.length - 1) {
         this.nameControl.setValue(user.name);

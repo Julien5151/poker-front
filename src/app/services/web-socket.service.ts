@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { SocketEvent } from '../enums/socket-event.enum';
-import { MessageType, UserEffect, VoteValue } from '../shared/enums';
-import { PingMessage, RoomMessage, WebSocketMessage } from '../shared/interfaces';
+import { MessageType } from '../shared/enums/message-type.enum';
+import { UserEffect } from '../shared/enums/user-effect.enum';
+import { VoteValue } from '../shared/enums/vote-value.enum';
+import { PingMessage, RoomMessage, WebSocketMessage } from '../shared/interfaces/ws-message.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +58,10 @@ export class WebSocketService {
 
   public sendUserNameUpdateMessage(userName: string): void {
     this.sendWebSocketMessage({ event: MessageType.UserNameUpdate, data: userName });
+  }
+
+  public sendUserJoinRoomMessage(roomName: string): void {
+    this.sendWebSocketMessage({ event: MessageType.UserJoinRoom, data: roomName });
   }
 
   public sendToggleHideMessage(): void {

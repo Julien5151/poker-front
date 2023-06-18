@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter } from 'rxjs';
 import { SocketEvent } from '../enums/socket-event.enum';
-import { MessageType } from '../shared/enums';
-import { RoomState } from '../shared/interfaces';
+import { MessageType } from '../shared/enums/message-type.enum';
+import { RoomState } from '../shared/interfaces/room-state.interface';
 import { WebSocketService } from './web-socket.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoomService {
-  public previousRoomState: RoomState = { isHidden: true, users: [] };
-  public roomStateEvent$ = new BehaviorSubject<RoomState>({ isHidden: true, users: [] });
+  public previousRoomState: RoomState = { name: '', users: [], isHidden: true };
+  public roomStateEvent$ = new BehaviorSubject<RoomState>({ name: '', users: [], isHidden: true });
 
   constructor(private readonly webSocketService: WebSocketService) {
     this.webSocketService.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Message)).subscribe((event) => {
