@@ -135,7 +135,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private handleSocketOpen(): void {
     this.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Open)).subscribe(() => {
       // TO DO : REWORK INIT OF ROOM
-      const initialRoom = `philippe_${Math.floor(Math.random() * 100000)}-room`;
+      const initialRoom = `philippe-room`;
       this.webSocketService.sendUserJoinRoomMessage(initialRoom);
       const userName = this.nameControl.value;
       if (userName) this.webSocketService.sendUserNameUpdateMessage(userName);
