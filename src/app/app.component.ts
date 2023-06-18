@@ -75,7 +75,11 @@ export class AppComponent implements OnInit, OnDestroy {
   public readonly USER_EFFECT = UserEffect;
   public readonly ROOM_EFFECT = RoomEffect;
   // Room
-  public roomState: RoomState | null = null;
+  public roomState: RoomState = {
+    name: '',
+    users: [],
+    isHidden: true,
+  };
   // Effects
   public isUserEffectPlaying = false;
   public roomEffect: RoomEffect | null = null;
