@@ -1,0 +1,44 @@
+<div class="flex h-full w-full min-w-[375px] flex-col items-center">
+  <p class="mt-4">{{ roomState.name }}</p>
+  <div class="mt-4 flex flex-col items-center justify-between sm:w-80 sm:flex-row">
+    <mat-form-field class="w-40">
+      <mat-label>My name</mat-label>
+      <input matInput [formControl]="nameControl" />
+    </mat-form-field>
+    <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
+  </div>
+  <div class="flex flex-wrap justify-center sm:my-10">
+    <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
+      {{ card.value }}
+    </button>
+  </div>
+  <div class="mt-5">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element" class="relative">
+          <p class="mb-0 overflow-hidden overflow-ellipsis whitespace-nowrap">{{ element.name }}</p>
+          <speech-bubble *ngIf="element.effect === USER_EFFECT.Philippe" class="absolute -top-[90px] left-[50%] w-[100px]"></speech-bubble>
+        </td>
+      </ng-container>
+      <!-- Vote Column -->
+      <ng-container matColumnDef="vote">
+        <th mat-header-cell *matHeaderCellDef>Vote</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.vote ? (roomState.isHidden ? '??' : element.vote.value) : '' }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+  <div class="mt-10 flex flex-col justify-between sm:w-[350px] sm:flex-row">
+    <button (click)="toggleHide()" class="my-2 w-44 text-lg" mat-raised-button color="accent">
+      {{ roomState.isHidden ? 'Display' : 'Hide' }} votes
+    </button>
+    <button (click)="resetVotes()" class="my-2 text-lg" mat-raised-button color="accent">Reset votes</button>
+  </div>
+</div>
+<canvas id="myCanvas" class="pointer-events-none fixed left-0 top-0 z-10 h-full w-full"></canvas>
+<audio *ngIf="roomEffect === ROOM_EFFECT.Fanfare" class="hidden" [volume]="0.3" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
