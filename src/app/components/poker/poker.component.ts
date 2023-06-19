@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { RoomEffect } from 'src/app/enums/room-effect.enum';
 import { SocketEvent } from 'src/app/enums/socket-event.enum';
@@ -16,9 +16,11 @@ import { VoteValue } from 'src/app/shared/enums/vote-value.enum';
 import { RoomState } from 'src/app/shared/interfaces/room-state.interface';
 import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
+import { UserId } from 'src/app/shared/types/user-id.type';
 import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component';
 
 export interface VoteElement {
+  userId: UserId;
   name: string;
   vote: Vote | null;
   effect: UserEffect | null;
@@ -92,6 +94,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   public isUserEffectPlaying = false;
   public roomEffect: RoomEffect | null = null;
   // Data table
+  @ViewChild('dataTable') dataTableRef!: MatTable<VoteElement>;
   public displayedColumns: string[] = ['name', 'vote'];
   public dataSource: Array<VoteElement> = [];
   // Controls
@@ -172,24 +175,35 @@ export class PokerComponent implements OnInit, OnDestroy {
   }
 
   private updateDataSource(): void {
-    const newDataSource: Array<VoteElement> = [];
-    // Fill data new data source
-    this.roomState.users.forEach((user, index) => {
-      newDataSource.push({ name: user.name, vote: this.VOTE_CARDS.find((vote) => vote.value === user.vote?.value) ?? null, effect: user.effect });
-      // Init user name if necessary
-      if (!this.nameControl.value && index === this.roomState.users.length - 1) {
-        this.nameControl.setValue(user.name);
+    // Update or remove votes
+    this.dataSource.forEach((vote, index) => {
+      const userWithVote = this.roomState.users.find((user) => user.id === vote.userId);
+      // User no longer exists in room, remove from data source
+      if (!userWithVote) {
+        this.dataSource.splice(index, 1);
+      } else {
+        // User still exists in room, update its item
+        vote.name = userWithVote.name;
+        vote.vote = userWithVote.vote;
+        vote.effect = userWithVote.effect;
       }
+    });
+    // Add new users
+    const newUsers = this.roomState.users.filter((user) => !this.dataSource.map((voteItem) => voteItem.userId).includes(user.id));
+    newUsers.forEach((user) => {
+      const { id, name, vote, effect } = user;
+      this.dataSource.push({ userId: id, name, vote, effect });
     });
     // Sort table if votes are not hidden
     if (!this.roomState.isHidden) {
-      newDataSource.sort((a, b) => {
+      this.dataSource.sort((a, b) => {
         const voteAWeight = a.vote?.weight ?? -1;
         const voteBWeight = b.vote?.weight ?? -1;
         return voteAWeight - voteBWeight;
       });
     }
-    this.dataSource = newDataSource;
+    // TO DO INIT VALUE IN CONTROL
+    this.dataTableRef?.renderRows();
   }
 
   private updateUserEffects(): void {

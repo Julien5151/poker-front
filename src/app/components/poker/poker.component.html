@@ -15,7 +15,7 @@
     </button>
   </div>
   <div class="mt-5">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
+    <table #dataTable mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
