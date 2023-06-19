@@ -190,9 +190,12 @@ export class PokerComponent implements OnInit, OnDestroy {
     });
     // Add new users
     const newUsers = this.roomState.users.filter((user) => !this.dataSource.map((voteItem) => voteItem.userId).includes(user.id));
-    newUsers.forEach((user) => {
+    newUsers.forEach((user, index) => {
       const { id, name, vote, effect } = user;
       this.dataSource.push({ userId: id, name, vote, effect });
+      if (!this.nameControl.value && index === newUsers.length - 1) {
+        this.nameControl.setValue(user.name);
+      }
     });
     // Sort table if votes are not hidden
     if (!this.roomState.isHidden) {
