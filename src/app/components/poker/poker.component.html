@@ -5,6 +5,7 @@
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
     <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
+    <button [disabled]="isUserEffectPlaying" (click)="sendIssou()" class="mb-6 text-lg" mat-raised-button color="warn">Issou !</button>
   </div>
   <div class="flex flex-wrap justify-center sm:my-10">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
@@ -18,7 +19,7 @@
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element" class="relative">
           <p class="mb-0 overflow-hidden overflow-ellipsis whitespace-nowrap">{{ element.name }}</p>
-          <speech-bubble *ngIf="element.effect === USER_EFFECT.Philippe" class="absolute -top-[90px] left-[50%] w-[100px]"></speech-bubble>
+          <speech-bubble *ngIf="element.effect" [effect]="element.effect" class="absolute -top-[90px] left-[50%] w-[100px]"></speech-bubble>
         </td>
       </ng-container>
       <!-- Vote Column -->
