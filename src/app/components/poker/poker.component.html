@@ -1,13 +1,15 @@
 <div class="flex h-full w-full min-w-[375px] flex-col items-center">
-  <div class="mt-4 flex flex-col items-center justify-between sm:w-80 sm:flex-row">
+  <div class="mt-4 flex w-60 flex-col items-center justify-between">
     <mat-form-field class="w-40">
       <mat-label>My name</mat-label>
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
-    <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
-    <button [disabled]="isUserEffectPlaying" (click)="sendIssou()" class="mb-6 text-lg" mat-raised-button color="warn">Issou !</button>
+    <div class="flex w-full justify-between">
+      <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
+      <button [disabled]="isUserEffectPlaying" (click)="sendIssou()" class="mb-6 text-lg" mat-raised-button color="warn">Issou !</button>
+    </div>
   </div>
-  <div class="flex flex-wrap justify-center sm:my-10">
+  <div class="flex flex-wrap justify-center sm:my-4">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
       {{ card.value }}
     </button>
