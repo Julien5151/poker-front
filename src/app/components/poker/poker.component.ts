@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTable, MatTableModule } from '@angular/material/table';
-import { Subject, debounceTime, filter, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import { Subject, debounceTime, filter, firstValueFrom, map, takeUntil } from 'rxjs';
 import { RoomEffect } from 'src/app/enums/room-effect.enum';
 import { SocketEvent } from 'src/app/enums/socket-event.enum';
 import { ConfettiService } from 'src/app/services/confetti.service';
@@ -19,6 +21,7 @@ import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
+import { JoinRoomDialogComponent } from '../join-room-dialog/join-room-dialog.component';
 import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component';
 
 export interface VoteElement {
@@ -119,6 +122,8 @@ export class PokerComponent implements OnInit, OnDestroy {
     private readonly roomService: RoomService,
     private readonly confettiService: ConfettiService,
     private readonly localStorageService: LocalStorageService,
+    private readonly dialogService: MatDialog,
+    private readonly router: Router,
   ) {}
 
   public ngOnInit(): void {
@@ -151,6 +156,22 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   public resetVotes(): void {
     this.webSocketService.sendResetVotesMessage();
+  }
+
+  public async joinRoom(): Promise<void> {
+    await firstValueFrom(
+      this.dialogService
+        .open(JoinRoomDialogComponent)
+        .afterClosed()
+        .pipe(
+          map((roomName: string | null) => {
+            if (roomName) {
+              this.router.navigate([`/poker/${roomName}`]);
+              this.localStorageService.setRoomNameToLocalStorage(roomName);
+            }
+          }),
+        ),
+    );
   }
 
   // Web socket handlers
