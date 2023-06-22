@@ -127,6 +127,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.handleRoomUpdateMessages();
     this.handleNameControlValueChanges();
     this.handleUserEffectControlValueChanges();
+    this.localStorageService.setRoomNameToLocalStorage(this.roomName);
   }
 
   public ngOnDestroy(): void {

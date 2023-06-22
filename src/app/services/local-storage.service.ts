@@ -11,4 +11,12 @@ export class LocalStorageService {
   public getUserNameFromLocalStorage(): string | null {
     return globalThis.localStorage.getItem('userName');
   }
+
+  public setRoomNameToLocalStorage(roomName: string): void {
+    globalThis.localStorage.setItem('roomName', roomName);
+  }
+
+  public getRoomNameFromLocalStorage(): string | null {
+    return globalThis.localStorage.getItem('roomName');
+  }
 }
