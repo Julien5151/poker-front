@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Quelle room rejoindre ?</h2>
+<mat-dialog-content>
+  <p>Je souhaite rejoindre la room suivante :</p>
+  <form [formGroup]="roomSelectionFormGroup" (ngSubmit)="closeDialog()">
+    <mat-form-field appearance="outline" class="w-full">
+      <input matInput [formControl]="roomNameControl" />
+      <mat-error *ngIf="roomNameControl.hasError('pattern') && !roomNameControl.hasError('required')">
+        Seulement minuscules, chiffres et '-'
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="flex w-full justify-end">
+    <button mat-raised-button color="accent" [mat-dialog-close]="null">Room aléatoire</button>
+    <button mat-raised-button [disabled]="!roomNameControl.valid" color="primary" [mat-dialog-close]="roomNameControl.value">Rejoindre</button>
+  </div>
+</mat-dialog-actions>
