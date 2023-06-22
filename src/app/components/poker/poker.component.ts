@@ -3,6 +3,7 @@ import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { RoomEffect } from 'src/app/enums/room-effect.enum';
@@ -15,6 +16,7 @@ import { UserEffect } from 'src/app/shared/enums/user-effect.enum';
 import { VoteValue } from 'src/app/shared/enums/vote-value.enum';
 import { RoomState } from 'src/app/shared/interfaces/room-state.interface';
 import { Vote } from 'src/app/shared/interfaces/vote.interface';
+import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
 import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component';
@@ -31,7 +33,7 @@ export interface VoteElement {
   templateUrl: './poker.component.html',
   styleUrls: ['./poker.component.scss'],
   standalone: true,
-  imports: [CommonModule, SpeechBubbleComponent, MatButtonModule, MatTableModule, MatInputModule, ReactiveFormsModule],
+  imports: [CommonModule, SpeechBubbleComponent, MatButtonModule, MatTableModule, MatInputModule, MatSelectModule, ReactiveFormsModule],
 })
 export class PokerComponent implements OnInit, OnDestroy {
   @Input() roomName = '';
@@ -82,6 +84,11 @@ export class PokerComponent implements OnInit, OnDestroy {
       weight: VOTE_VALUE_WEIGHT_MAP[VoteValue.Surf],
     },
   ];
+  public readonly EFFECTS: Array<{ name: UserEffect; message: string }> = [
+    { name: UserEffect.Philippe, message: USER_EFFECTS_MAP[UserEffect.Philippe].message },
+    { name: UserEffect.Issou, message: USER_EFFECTS_MAP[UserEffect.Issou].message },
+    { name: UserEffect.Arretez, message: USER_EFFECTS_MAP[UserEffect.Arretez].message },
+  ];
   public readonly USER_EFFECT = UserEffect;
   public readonly ROOM_EFFECT = RoomEffect;
   // Room
@@ -99,6 +106,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   public dataSource: Array<VoteElement> = [];
   // Controls
   public nameControl = new FormControl<string>(this.localStorageService.getUserNameFromLocalStorage() ?? '');
+  public userEffectControl = new FormControl<UserEffect | null>(null);
   // Subscriptions
   private destroy$ = new Subject<boolean>();
 
@@ -118,6 +126,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.handleSocketOpen();
     this.handleRoomUpdateMessages();
     this.handleNameControlValueChanges();
+    this.handleUserEffectControlValueChanges();
   }
 
   public ngOnDestroy(): void {
@@ -130,16 +139,9 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.webSocketService.sendVoteMessage(vote);
   }
 
-  public sendPhilippe(): void {
-    this.webSocketService.sendUserEffectMessage(UserEffect.Philippe);
-  }
-
-  public sendIssou(): void {
-    this.webSocketService.sendUserEffectMessage(UserEffect.Issou);
-  }
-
-  public sendArretez(): void {
-    this.webSocketService.sendUserEffectMessage(UserEffect.Arretez);
+  public sendUserEffect(effect: UserEffect): void {
+    this.userEffectControl.disable({ emitEvent: false });
+    this.webSocketService.sendUserEffectMessage(effect);
   }
 
   public toggleHide(): void {
@@ -174,6 +176,15 @@ export class PokerComponent implements OnInit, OnDestroy {
       if (name) {
         this.localStorageService.setUserNameToLocalStorage(name);
         this.webSocketService.sendUserNameUpdateMessage(name);
+      }
+    });
+  }
+
+  private handleUserEffectControlValueChanges(): void {
+    this.userEffectControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((effect) => {
+      if (effect) {
+        this.sendUserEffect(effect);
+        this.userEffectControl.disable({ emitEvent: false });
       }
     });
   }
@@ -215,6 +226,10 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   private updateUserEffects(): void {
     this.isUserEffectPlaying = this.roomState.users.some((user) => user.effect !== null);
+    if (!this.isUserEffectPlaying) {
+      this.userEffectControl.reset();
+      this.userEffectControl.enable();
+    }
   }
 
   private handleRoomEffects(): void {
