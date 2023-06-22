@@ -1,5 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { USER_EFFECTS_SOUND_MAP } from 'src/app/maps/user-effect-sound.map';
 import { UserEffect } from 'src/app/shared/enums/user-effect.enum';
+import { UserEffectData } from 'src/app/shared/interfaces/user-effect-data.interface';
+import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
 
 @Component({
   selector: 'speech-bubble',
@@ -8,16 +11,13 @@ import { UserEffect } from 'src/app/shared/enums/user-effect.enum';
 })
 export class SpeechBubbleComponent implements OnInit {
   @Input({ required: true }) effect: UserEffect = UserEffect.Philippe;
+  public userEffectData!: UserEffectData;
+  public soundUrl!: string;
 
   private readonly BASE_ASSETS_URL = '../../../assets';
 
-  public svgUrl = '';
-  public soundUrl = '';
-  public volume = 1;
-
   public ngOnInit(): void {
-    this.svgUrl = `${this.BASE_ASSETS_URL}/images/${this.effect === UserEffect.Philippe ? 'speech-bubble-philippe.svg' : 'speech-bubble-issou.svg'}`;
-    this.soundUrl = `${this.BASE_ASSETS_URL}/sounds/${this.effect === UserEffect.Philippe ? 'philippe.mp3' : 'issou.mp3'}`;
-    this.volume = this.effect === UserEffect.Philippe ? 0.3 : 0.7;
+    this.userEffectData = USER_EFFECTS_MAP[this.effect];
+    this.soundUrl = `${this.BASE_ASSETS_URL}/sounds/${USER_EFFECTS_SOUND_MAP[this.effect]}`;
   }
 }

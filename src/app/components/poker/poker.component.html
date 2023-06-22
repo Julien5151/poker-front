@@ -1,12 +1,13 @@
 <div class="flex h-full w-full min-w-[375px] flex-col items-center">
-  <div class="mt-4 flex w-60 flex-col items-center justify-between">
+  <div class="mt-4 flex w-[380px] flex-col items-center justify-between">
     <mat-form-field class="w-40">
-      <mat-label>My name</mat-label>
+      <mat-label>Pseudonyme</mat-label>
       <input matInput [formControl]="nameControl" />
     </mat-form-field>
-    <div class="flex w-full justify-between">
+    <div class="flex w-full flex-col items-center justify-between sm:flex-row">
       <button [disabled]="isUserEffectPlaying" (click)="sendPhilippe()" class="mb-6 text-lg" mat-raised-button color="warn">Philippe !</button>
       <button [disabled]="isUserEffectPlaying" (click)="sendIssou()" class="mb-6 text-lg" mat-raised-button color="warn">Issou !</button>
+      <button [disabled]="isUserEffectPlaying" (click)="sendArretez()" class="mb-6 text-lg" mat-raised-button color="warn">Arrêtez !</button>
     </div>
   </div>
   <div class="flex flex-wrap justify-center sm:my-4">
@@ -18,10 +19,10 @@
     <table #dataTable mat-table [dataSource]="dataSource" class="mat-elevation-z8 mx-auto">
       <!-- Name Column -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <th mat-header-cell *matHeaderCellDef>Pseudonyme</th>
         <td mat-cell *matCellDef="let element" class="relative">
           <p class="mb-0 overflow-hidden overflow-ellipsis whitespace-nowrap">{{ element.name }}</p>
-          <speech-bubble *ngIf="element.effect" [effect]="element.effect" class="absolute -top-[90px] left-[50%] w-[100px]"></speech-bubble>
+          <speech-bubble *ngIf="element.effect" [effect]="element.effect" class="absolute -top-[90px] left-[50%] h-[100px] w-[100px]"></speech-bubble>
         </td>
       </ng-container>
       <!-- Vote Column -->
@@ -35,11 +36,11 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
-  <div class="mt-10 flex flex-col justify-between sm:w-[350px] sm:flex-row">
-    <button (click)="toggleHide()" class="my-2 w-44 text-lg" mat-raised-button color="accent">
-      {{ roomState.isHidden ? 'Display' : 'Hide' }} votes
+  <div class="mt-10 flex w-56 justify-between sm:w-60">
+    <button (click)="toggleHide()" class="my-2 text-lg" mat-raised-button color="accent">
+      {{ roomState.isHidden ? 'Afficher' : 'Masquer' }}
     </button>
-    <button (click)="resetVotes()" class="my-2 text-lg" mat-raised-button color="accent">Reset votes</button>
+    <button (click)="resetVotes()" class="my-2 text-lg" mat-raised-button color="accent">Reset</button>
   </div>
 </div>
 <canvas id="myCanvas" class="pointer-events-none fixed left-0 top-0 z-10 h-full w-full"></canvas>

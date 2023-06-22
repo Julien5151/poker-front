@@ -138,6 +138,10 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.webSocketService.sendUserEffectMessage(UserEffect.Issou);
   }
 
+  public sendArretez(): void {
+    this.webSocketService.sendUserEffectMessage(UserEffect.Arretez);
+  }
+
   public toggleHide(): void {
     this.webSocketService.sendToggleHideMessage();
   }

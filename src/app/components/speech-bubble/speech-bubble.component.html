@@ -1,4 +1,4 @@
-<div>
-  <img [src]="svgUrl" />
-  <audio [volume]="volume" autoplay [src]="soundUrl"></audio>
+<div class="flex h-full w-full bg-[url('./assets/images/speech-bubble.svg')] bg-cover">
+  <span class="relative -top-2 m-auto text-black">{{ userEffectData.message }}</span>
+  <audio [volume]="userEffectData.volume" autoplay [src]="soundUrl"></audio>
 </div>
