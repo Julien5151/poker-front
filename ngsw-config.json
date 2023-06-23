@@ -10,6 +10,13 @@
       }
     },
     {
+      "name": "assets-mp3",
+      "installMode": "prefetch",
+      "resources": {
+        "files": ["/assets/sounds/*.mp3"]
+      }
+    },
+    {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
