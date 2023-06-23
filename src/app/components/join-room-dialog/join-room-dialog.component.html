@@ -11,7 +11,7 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <div class="flex w-full justify-end">
+  <div class="flex w-full justify-end pb-2">
     <button mat-raised-button color="accent" [mat-dialog-close]="RANDOM_ROOM_NAME">Room aléatoire</button>
     <button mat-raised-button [disabled]="!roomNameControl.valid" color="primary" [mat-dialog-close]="roomNameControl.value">Rejoindre</button>
   </div>
