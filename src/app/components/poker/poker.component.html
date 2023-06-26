@@ -1,5 +1,5 @@
 <div class="flex h-full w-full min-w-[375px] flex-col items-center">
-  <div class="mt-4 flex w-[380px] flex-col items-center justify-between">
+  <div class="mt-4 flex w-[550px] flex-col items-center justify-between">
     <mat-form-field class="w-40">
       <mat-label>Pseudonyme</mat-label>
       <input matInput [formControl]="nameControl" />
@@ -59,8 +59,8 @@
     </button>
     <button (click)="resetVotes()" class="my-2 text-lg" mat-raised-button color="accent">Reset</button>
   </div>
-  <div class="h-9">
-    <button id="join-btn" (click)="joinRoom()" class="mt-6 text-lg" mat-raised-button color="accent">Rejoindre une room</button>
+  <div class="h-9 sm:hidden">
+    <button (click)="joinRoom()" class="mt-6 text-lg" mat-raised-button color="accent">Rejoindre une room</button>
   </div>
 </div>
 <canvas id="myCanvas" class="pointer-events-none fixed left-0 top-0 z-10 h-full w-full"></canvas>

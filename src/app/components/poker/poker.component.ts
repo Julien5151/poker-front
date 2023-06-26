@@ -91,6 +91,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     { name: UserEffect.Philippe, message: USER_EFFECTS_MAP[UserEffect.Philippe].message },
     { name: UserEffect.Issou, message: USER_EFFECTS_MAP[UserEffect.Issou].message },
     { name: UserEffect.Arretez, message: USER_EFFECTS_MAP[UserEffect.Arretez].message },
+    { name: UserEffect.PutainGenial, message: USER_EFFECTS_MAP[UserEffect.PutainGenial].message },
   ];
   public readonly USER_EFFECT = UserEffect;
   public readonly ROOM_EFFECT = RoomEffect;
