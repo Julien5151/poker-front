@@ -256,7 +256,7 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   private handleRoomEffects(): void {
     const usersWithVotes = this.roomState.users.filter((user) => user.vote);
-    const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote)).size === 1;
+    const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote?.value)).size === 1;
     if (
       this.roomService.previousRoomState.isHidden &&
       !this.roomState.isHidden &&
