@@ -17,6 +17,13 @@
       }
     },
     {
+      "name": "assets-video",
+      "installMode": "prefetch",
+      "resources": {
+        "files": ["/assets/videos/*.webm"]
+      }
+    },
+    {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
