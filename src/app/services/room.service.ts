@@ -9,15 +9,12 @@ import { WebSocketService } from './web-socket.service';
   providedIn: 'root',
 })
 export class RoomService {
-  public previousRoomState: RoomState = { name: '', users: [], isHidden: true };
-  public roomStateEvent$ = new BehaviorSubject<RoomState>({ name: '', users: [], isHidden: true });
+  public roomStateEvent$ = new BehaviorSubject<RoomState>({ name: '', users: [], isHidden: true, roomEffect: null });
 
   constructor(private readonly webSocketService: WebSocketService) {
     this.webSocketService.socketEvent$.pipe(filter((event) => event.type === SocketEvent.Message)).subscribe((event) => {
       const message = event.message;
       if (message?.event === MessageType.RoomUpdate) {
-        // Store previous value
-        this.previousRoomState = this.roomStateEvent$.value;
         // Emit new room state
         this.roomStateEvent$.next(message.data);
       }
