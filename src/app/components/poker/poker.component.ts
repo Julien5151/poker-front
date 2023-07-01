@@ -8,12 +8,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, filter, firstValueFrom, map, takeUntil } from 'rxjs';
-import { RoomEffect } from 'src/app/enums/room-effect.enum';
 import { SocketEvent } from 'src/app/enums/socket-event.enum';
 import { ConfettiService } from 'src/app/services/confetti.service';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
 import { RoomService } from 'src/app/services/room.service';
 import { WebSocketService } from 'src/app/services/web-socket.service';
+import { RoomEffect } from 'src/app/shared/enums/room-effect.enum';
 import { UserEffect } from 'src/app/shared/enums/user-effect.enum';
 import { VoteValue } from 'src/app/shared/enums/vote-value.enum';
 import { RoomState } from 'src/app/shared/interfaces/room-state.interface';
@@ -100,10 +100,10 @@ export class PokerComponent implements OnInit, OnDestroy {
     name: '',
     users: [],
     isHidden: true,
+    roomEffect: null,
   };
   // Effects
   public isUserEffectPlaying = false;
-  public roomEffect: RoomEffect | null = null;
   // Data table
   @ViewChild('dataTable') dataTableRef!: MatTable<VoteElement>;
   public displayedColumns: string[] = ['name', 'vote'];
@@ -243,7 +243,6 @@ export class PokerComponent implements OnInit, OnDestroy {
         return voteAWeight - voteBWeight;
       });
     }
-    // TO DO INIT VALUE IN CONTROL
     this.dataTableRef?.renderRows();
   }
 
@@ -256,24 +255,8 @@ export class PokerComponent implements OnInit, OnDestroy {
   }
 
   private handleRoomEffects(): void {
-    const usersWithVotes = this.roomState.users.filter((user) => user.vote);
-    const usersHaveSameVote = new Set(usersWithVotes.map((user) => user.vote?.value)).size === 1;
-    if (
-      this.roomService.previousRoomState.isHidden &&
-      !this.roomState.isHidden &&
-      usersWithVotes.length === this.roomState.users.length &&
-      usersWithVotes.length >= 3 &&
-      usersHaveSameVote
-    ) {
-      this.sendConfetti();
+    if (this.roomState.roomEffect === RoomEffect.Fanfare) {
+      this.confettiService.sendConfettisFromBottomCorners();
     }
-  }
-
-  private sendConfetti(): void {
-    this.roomEffect = RoomEffect.Fanfare;
-    this.confettiService.sendConfettisFromBottomCorners();
-    setTimeout(() => {
-      this.roomEffect = null;
-    }, 5000);
   }
 }

@@ -64,4 +64,4 @@
   </div>
 </div>
 <canvas id="myCanvas" class="pointer-events-none fixed left-0 top-0 z-10 h-full w-full"></canvas>
-<audio *ngIf="roomEffect === ROOM_EFFECT.Fanfare" class="hidden" [volume]="0.3" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
+<audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Fanfare" class="hidden" [volume]="0.3" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
