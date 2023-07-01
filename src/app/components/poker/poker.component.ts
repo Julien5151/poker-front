@@ -268,7 +268,12 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   private sendConfettis(): void {
     if (!this.isRoomEffectPlaying) {
-      this.confettiService.sendConfettisFromBottomCorners();
+      const intervals = [0, 500, 1000, 1500, 2000, 2500];
+      intervals.forEach((interval) => {
+        setTimeout(() => {
+          this.confettiService.sendConfettisFromBottomCorners();
+        }, interval);
+      });
     }
   }
 }
