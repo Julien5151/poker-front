@@ -19,6 +19,7 @@ import { VoteValue } from 'src/app/shared/enums/vote-value.enum';
 import { RoomState } from 'src/app/shared/interfaces/room-state.interface';
 import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
+import { ROOM_EFFECT_DURATIONS_MAP } from 'src/app/shared/maps/room-effect-durations.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
 import { JoinRoomDialogComponent } from '../dialogs/join-room-dialog/join-room-dialog.component';
@@ -104,6 +105,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   };
   // Effects
   public isUserEffectPlaying = false;
+  private isRoomEffectPlaying = false;
   // Data table
   @ViewChild('dataTable') dataTableRef!: MatTable<VoteElement>;
   public displayedColumns: string[] = ['name', 'vote'];
@@ -256,6 +258,16 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   private handleRoomEffects(): void {
     if (this.roomState.roomEffect === RoomEffect.Fanfare) {
+      this.sendConfettis();
+      this.isRoomEffectPlaying = true;
+      setTimeout(() => {
+        this.isRoomEffectPlaying = false;
+      }, ROOM_EFFECT_DURATIONS_MAP[RoomEffect.Fanfare]);
+    }
+  }
+
+  private sendConfettis(): void {
+    if (!this.isRoomEffectPlaying) {
       this.confettiService.sendConfettisFromBottomCorners();
     }
   }
