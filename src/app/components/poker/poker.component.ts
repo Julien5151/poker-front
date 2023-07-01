@@ -21,7 +21,7 @@ import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
-import { JoinRoomDialogComponent } from '../join-room-dialog/join-room-dialog.component';
+import { JoinRoomDialogComponent } from '../dialogs/join-room-dialog/join-room-dialog.component';
 import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component';
 
 export interface VoteElement {

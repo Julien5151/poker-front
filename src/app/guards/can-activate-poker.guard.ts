@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { map } from 'rxjs';
-import { JoinRoomDialogComponent } from '../components/join-room-dialog/join-room-dialog.component';
+import { JoinRoomDialogComponent } from '../components/dialogs/join-room-dialog/join-room-dialog.component';
 import { StringHelper } from '../helpers/string.helper';
 import { LocalStorageService } from '../services/local-storage.service';
 import { ROOM_NAME_REGEX } from '../shared/regex/room-name.regex';

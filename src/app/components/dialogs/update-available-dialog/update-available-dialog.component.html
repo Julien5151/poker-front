@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Nouvelle version détectée</h2>
+<mat-dialog-content>
+  <p>
+    Une nouvelle version de l'application est disponible. Veuillez cliquer sur "Recharger" pour installer la nouvelle version. (ne pas mettre à jour
+    l'application risque d'empêcher son fonctionnement)
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="flex w-full justify-end pb-2">
+    <button mat-raised-button color="accent" mat-dialog-close>Annuler</button>
+    <button (click)="reloadApplication()" mat-raised-button color="primary">Recharger</button>
+  </div>
+</mat-dialog-actions>
