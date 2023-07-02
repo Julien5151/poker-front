@@ -11,33 +11,40 @@ import { Subject, debounceTime, filter, firstValueFrom, map, takeUntil } from 'r
 import { SocketEvent } from 'src/app/enums/socket-event.enum';
 import { ConfettiService } from 'src/app/services/confetti.service';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
-import { RoomService } from 'src/app/services/room.service';
 import { WebSocketService } from 'src/app/services/web-socket.service';
 import { RoomEffect } from 'src/app/shared/enums/room-effect.enum';
+import { UserAction } from 'src/app/shared/enums/user-action.enum';
 import { UserEffect } from 'src/app/shared/enums/user-effect.enum';
 import { VoteValue } from 'src/app/shared/enums/vote-value.enum';
 import { RoomState } from 'src/app/shared/interfaces/room-state.interface';
+import { User } from 'src/app/shared/interfaces/user.interface';
 import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
-import { ROOM_EFFECT_DURATIONS_MAP } from 'src/app/shared/maps/room-effect-durations.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
+import { CountdownComponent } from '../countdown/countdown.component';
 import { JoinRoomDialogComponent } from '../dialogs/join-room-dialog/join-room-dialog.component';
+import { NuclearActivatorComponent } from '../nuclear-activator/nuclear-activator.component';
+import { NuclearExplosionComponent } from '../nuclear-explosion/nuclear-explosion.component';
 import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component';
-
-export interface VoteElement {
-  userId: UserId;
-  name: string;
-  vote: Vote | null;
-  effect: UserEffect | null;
-}
 
 @Component({
   selector: 'poker',
   templateUrl: './poker.component.html',
   styleUrls: ['./poker.component.scss'],
   standalone: true,
-  imports: [CommonModule, SpeechBubbleComponent, MatButtonModule, MatTableModule, MatInputModule, MatSelectModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    SpeechBubbleComponent,
+    MatButtonModule,
+    MatTableModule,
+    MatInputModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    NuclearExplosionComponent,
+    NuclearActivatorComponent,
+    CountdownComponent,
+  ],
 })
 export class PokerComponent implements OnInit, OnDestroy {
   @Input() roomName = '';
@@ -95,6 +102,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     { name: UserEffect.PutainGenial, message: USER_EFFECTS_MAP[UserEffect.PutainGenial].message },
   ];
   public readonly USER_EFFECT = UserEffect;
+  public readonly USER_ACTION = UserAction;
   public readonly ROOM_EFFECT = RoomEffect;
   // Room
   public roomState: RoomState = {
@@ -102,14 +110,26 @@ export class PokerComponent implements OnInit, OnDestroy {
     users: [],
     isHidden: true,
     roomEffect: null,
+    roomEffectCoolDowns: {
+      [RoomEffect.Fanfare]: 0,
+      [RoomEffect.Ignition]: 0,
+      [RoomEffect.Explosion]: 0,
+    },
   };
+  // User
+  public userId: UserId = '';
+  public ignitionButtonActivated = true;
   // Effects
   public isUserEffectPlaying = false;
   private isRoomEffectPlaying = false;
+  // Nuclear effects
+  public isIgnitionReloading = false;
+  public isWasteLand = false;
+  public isLaunchAuthorized = false;
   // Data table
-  @ViewChild('dataTable') dataTableRef!: MatTable<VoteElement>;
+  @ViewChild('dataTable') dataTableRef!: MatTable<User>;
   public displayedColumns: string[] = ['name', 'vote'];
-  public dataSource: Array<VoteElement> = [];
+  public dataSource: Array<User> = [];
   // Controls
   public nameControl = new FormControl<string>(this.localStorageService.getUserNameFromLocalStorage() ?? '');
   public userEffectControl = new FormControl<UserEffect | null>(null);
@@ -118,11 +138,11 @@ export class PokerComponent implements OnInit, OnDestroy {
 
   // Service subjects
   private socketEvent$ = this.webSocketService.socketEvent$.pipe(takeUntil(this.destroy$));
-  private roomStateEvent$ = this.roomService.roomStateEvent$.pipe(takeUntil(this.destroy$));
+  private roomStateEvent$ = this.webSocketService.roomStateEvent$.pipe(takeUntil(this.destroy$));
+  private userEvent$ = this.webSocketService.userEvent$.pipe(takeUntil(this.destroy$));
 
   constructor(
     private readonly webSocketService: WebSocketService,
-    private readonly roomService: RoomService,
     private readonly confettiService: ConfettiService,
     private readonly localStorageService: LocalStorageService,
     private readonly dialogService: MatDialog,
@@ -133,6 +153,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.webSocketService.initWebSocket();
     this.handleSocketOpen();
     this.handleRoomUpdateMessages();
+    this.handleUserMessages();
     this.handleNameControlValueChanges();
     this.handleUserEffectControlValueChanges();
     this.localStorageService.setRoomNameToLocalStorage(this.roomName);
@@ -192,6 +213,13 @@ export class PokerComponent implements OnInit, OnDestroy {
       this.updateDataSource();
       this.updateUserEffects();
       this.handleRoomEffects();
+      this.updateNuclearEffects();
+    });
+  }
+
+  private handleUserMessages(): void {
+    this.userEvent$.subscribe((userId) => {
+      this.userId = userId;
     });
   }
 
@@ -214,25 +242,33 @@ export class PokerComponent implements OnInit, OnDestroy {
     });
   }
 
+  private updateNuclearEffects(): void {
+    const currentTimestamp = new Date().getTime();
+    const roomState = this.roomState;
+    this.isWasteLand = roomState.roomEffectCoolDowns[RoomEffect.Explosion] > currentTimestamp;
+    this.isIgnitionReloading = roomState.roomEffect !== RoomEffect.Ignition && roomState.roomEffectCoolDowns[RoomEffect.Ignition] > currentTimestamp;
+    this.isLaunchAuthorized = roomState.users.filter((user) => user.action === UserAction.NuclearIgnition).length >= 3;
+  }
+
   private updateDataSource(): void {
     // Update or remove votes
-    this.dataSource.forEach((vote, index) => {
-      const userWithVote = this.roomState.users.find((user) => user.id === vote.userId);
+    this.dataSource.forEach((user, index) => {
+      const userWithVote = this.roomState.users.find((usr) => usr.id === user.id);
       // User no longer exists in room, remove from data source
       if (!userWithVote) {
         this.dataSource.splice(index, 1);
       } else {
         // User still exists in room, update its item
-        vote.name = userWithVote.name;
-        vote.vote = userWithVote.vote;
-        vote.effect = userWithVote.effect;
+        user.name = userWithVote.name;
+        user.vote = userWithVote.vote;
+        user.effect = userWithVote.effect;
+        user.action = userWithVote.action;
       }
     });
     // Add new users
-    const newUsers = this.roomState.users.filter((user) => !this.dataSource.map((voteItem) => voteItem.userId).includes(user.id));
+    const newUsers = this.roomState.users.filter((user) => !this.dataSource.map((usr) => usr.id).includes(user.id));
     newUsers.forEach((user, index) => {
-      const { id, name, vote, effect } = user;
-      this.dataSource.push({ userId: id, name, vote, effect });
+      this.dataSource.push(user);
       if (!this.nameControl.value && index === newUsers.length - 1) {
         this.nameControl.setValue(user.name);
       }
@@ -254,26 +290,21 @@ export class PokerComponent implements OnInit, OnDestroy {
       this.userEffectControl.reset();
       this.userEffectControl.enable();
     }
+    this.ignitionButtonActivated = !(this.roomState.users.find((user) => user.id === this.userId)?.action === UserAction.NuclearIgnition);
   }
 
   private handleRoomEffects(): void {
-    if (this.roomState.roomEffect === RoomEffect.Fanfare) {
-      this.sendConfettis();
-      this.isRoomEffectPlaying = true;
-      setTimeout(() => {
-        this.isRoomEffectPlaying = false;
-      }, ROOM_EFFECT_DURATIONS_MAP[RoomEffect.Fanfare]);
+    const roomEffect = this.roomState.roomEffect;
+    if (!roomEffect) {
+      this.isRoomEffectPlaying = false;
+      return;
     }
-  }
-
-  private sendConfettis(): void {
-    if (!this.isRoomEffectPlaying) {
-      const intervals = [0, 500, 1000, 1500, 2000, 2500];
-      intervals.forEach((interval) => {
-        setTimeout(() => {
-          this.confettiService.sendConfettisFromBottomCorners();
-        }, interval);
-      });
+    if (this.isRoomEffectPlaying) return;
+    switch (roomEffect) {
+      case RoomEffect.Fanfare:
+        this.confettiService.sendConfettisFromBottomCorners();
+        break;
     }
+    this.isRoomEffectPlaying = true;
   }
 }

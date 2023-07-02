@@ -15,13 +15,18 @@ export class ConfettiService {
   };
 
   public sendConfettisFromBottomCorners(): void {
-    this.sendConfettis({
-      angle: 45,
-      origin: { x: -0.1, y: 1.1 },
-    });
-    this.sendConfettis({
-      angle: 135,
-      origin: { x: 1.1, y: 1.1 },
+    const intervals = [0, 500, 1000, 1500, 2000, 2500];
+    intervals.forEach((interval) => {
+      setTimeout(() => {
+        this.sendConfettis({
+          angle: 45,
+          origin: { x: -0.1, y: 1.1 },
+        });
+        this.sendConfettis({
+          angle: 135,
+          origin: { x: 1.1, y: 1.1 },
+        });
+      }, interval);
     });
   }
 

@@ -1,0 +1,1 @@
+export type CoolDownTimestamp = number;
