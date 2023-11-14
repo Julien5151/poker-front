@@ -5,4 +5,5 @@ export const USER_EFFECTS_SOUND_MAP: Record<UserEffect, string> = {
   [UserEffect.Issou]: 'issou.mp3',
   [UserEffect.Arretez]: 'arretez.mp3',
   [UserEffect.PutainGenial]: 'putain-genial.mp3',
+  [UserEffect.Leviosa]: 'leviosa.mp3',
 };
