@@ -22,6 +22,7 @@ import { Vote } from 'src/app/shared/interfaces/vote.interface';
 import { USER_EFFECTS_MAP } from 'src/app/shared/maps/effects.map';
 import { VOTE_VALUE_WEIGHT_MAP } from 'src/app/shared/maps/vote.map';
 import { UserId } from 'src/app/shared/types/user-id.type';
+import { ChenilleActivatorComponent } from '../chenille-activator/chenille-activator.component';
 import { CountdownComponent } from '../countdown/countdown.component';
 import { JoinRoomDialogComponent } from '../dialogs/join-room-dialog/join-room-dialog.component';
 import { NuclearActivatorComponent } from '../nuclear-activator/nuclear-activator.component';
@@ -44,6 +45,7 @@ import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component'
     NuclearExplosionComponent,
     NuclearActivatorComponent,
     CountdownComponent,
+    ChenilleActivatorComponent,
   ],
 })
 export class PokerComponent implements OnInit, OnDestroy {
@@ -115,11 +117,13 @@ export class PokerComponent implements OnInit, OnDestroy {
       [RoomEffect.Fanfare]: 0,
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
+      [RoomEffect.Chenille]: 0,
     },
   };
   // User
   public userId: UserId = '';
   public ignitionButtonActivated = true;
+  public chenilleButtonActivated = true;
   // Effects
   public isUserEffectPlaying = false;
   private isRoomEffectPlaying = false;
@@ -127,6 +131,8 @@ export class PokerComponent implements OnInit, OnDestroy {
   public isIgnitionReloading = false;
   public isWasteLand = false;
   public isLaunchAuthorized = false;
+  // Chenille effects
+  public isChenilleIgnitionReloading = false;
   // Data table
   @ViewChild('dataTable') dataTableRef!: MatTable<User>;
   public displayedColumns: string[] = ['name', 'vote'];

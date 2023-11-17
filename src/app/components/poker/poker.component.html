@@ -6,6 +6,7 @@
         <input matInput [formControl]="nameControl" />
       </mat-form-field>
       <nuclear-activator [disabled]="!ignitionButtonActivated || isIgnitionReloading" class="ml-3 mt-1"></nuclear-activator>
+      <chenille-activator [disabled]="!chenilleButtonActivated || isChenilleIgnitionReloading" class="ml-3 mt-1"></chenille-activator>
     </div>
     <div class="hidden w-full items-center justify-between sm:flex">
       <button
