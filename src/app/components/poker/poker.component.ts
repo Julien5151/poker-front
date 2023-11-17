@@ -311,6 +311,9 @@ export class PokerComponent implements OnInit, OnDestroy {
       case RoomEffect.Fanfare:
         this.confettiService.sendConfettisFromBottomCorners();
         break;
+      case RoomEffect.Chenille:
+        this.confettiService.sendConfettisFromTop();
+        break;
     }
     this.isRoomEffectPlaying = true;
   }

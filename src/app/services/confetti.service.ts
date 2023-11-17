@@ -30,6 +30,18 @@ export class ConfettiService {
     });
   }
 
+  public sendConfettisFromTop(): void {
+    setInterval(() => {
+      const distances = [0, 0.2, 0.4, 0.6, 0.8, 1];
+      distances.forEach((distance) => {
+        this.sendConfettis({
+          angle: -90,
+          origin: { x: distance, y: -0.6 },
+        });
+      });
+    }, 1000);
+  }
+
   private sendConfettis(options: confetti.Options): void {
     this.CONFETTI_FACTORY({ ...this.CONFETTI_BASIC_OPTIONS, ...options });
   }
