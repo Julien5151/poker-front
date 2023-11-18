@@ -10,10 +10,11 @@ import { UserAction } from 'src/app/shared/enums/user-action.enum';
   imports: [CommonModule],
 })
 export class ChenilleActivatorComponent {
+  @Input({ required: true }) chenilleIgnited = false;
   @Input({ required: true }) disabled = false;
   private readonly webSocketService = inject(WebSocketService);
 
-  public sendChenilleIgnition(): void {
-    this.webSocketService.sendUserActionUpdateMessage(UserAction.ChenilleIgnition);
+  public sendChenille(): void {
+    this.webSocketService.sendUserActionUpdateMessage(this.chenilleIgnited ? null : UserAction.ChenilleIgnition);
   }
 }

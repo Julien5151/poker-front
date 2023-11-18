@@ -96,7 +96,7 @@ export class WebSocketService {
     this.sendWebSocketMessage({ event: MessageType.UserNameUpdate, data: userName });
   }
 
-  public sendUserActionUpdateMessage(userAction: UserAction): void {
+  public sendUserActionUpdateMessage(userAction: UserAction | null): void {
     this.sendWebSocketMessage({ event: MessageType.UserActionUpdate, data: userAction });
   }
 

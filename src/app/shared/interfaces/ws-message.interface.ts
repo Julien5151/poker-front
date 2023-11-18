@@ -57,5 +57,5 @@ export interface ResetVotesMessage {
 
 export interface UserActionMessage {
   event: MessageType.UserActionUpdate;
-  data: UserAction;
+  data: UserAction | null;
 }
