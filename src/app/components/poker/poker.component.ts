@@ -117,6 +117,7 @@ export class PokerComponent implements OnInit, OnDestroy {
       [RoomEffect.Fanfare]: 0,
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
+      [RoomEffect.ChenilleIgnition]: 0,
       [RoomEffect.Chenille]: 0,
     },
   };
