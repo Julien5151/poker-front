@@ -117,7 +117,6 @@ export class PokerComponent implements OnInit, OnDestroy {
       [RoomEffect.Fanfare]: 0,
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
-      [RoomEffect.ChenilleIgnition]: 0,
       [RoomEffect.Chenille]: 0,
     },
   };
@@ -264,7 +263,7 @@ export class PokerComponent implements OnInit, OnDestroy {
     const currentTimestamp = new Date().getTime();
     const roomState = this.roomState;
     this.isChenilleIgnitionReloading =
-      roomState.roomEffect !== RoomEffect.ChenilleIgnition && roomState.roomEffectCoolDowns[RoomEffect.ChenilleIgnition] > currentTimestamp;
+      roomState.roomEffect !== RoomEffect.Chenille && roomState.roomEffectCoolDowns[RoomEffect.Chenille] > currentTimestamp;
   }
 
   private updateDataSource(): void {
