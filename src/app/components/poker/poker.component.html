@@ -75,7 +75,7 @@
 </div>
 <canvas id="myCanvas" class="pointer-events-none fixed left-0 top-0 z-10 h-full w-full"></canvas>
 <audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Fanfare" class="hidden" volume="0.3" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
-<!-- <audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Ignition" class="hidden" volume="1" autoplay src="../../../assets/sounds/alarm.mp3"></audio>
-<audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Chenille" class="hidden" volume="1" autoplay src="../../../assets/sounds/chenille.mp3"></audio> -->
+<audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Ignition" class="hidden" volume="1" autoplay src="../../../assets/sounds/alarm.mp3"></audio>
+<audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Chenille" class="hidden" volume="1" autoplay src="../../../assets/sounds/chenille.mp3"></audio>
 <nuclear-explosion *ngIf="roomState.roomEffect === ROOM_EFFECT.Explosion"></nuclear-explosion>
 <countdown *ngIf="roomState.roomEffect === ROOM_EFFECT.Ignition" [launchAuthorized]="isLaunchAuthorized"></countdown>
