@@ -46,12 +46,13 @@
           mat-cell
           *matCellDef="let user"
           [ngClass]="{
-            'font-bold text-red-600': user.action === USER_ACTION.NuclearIgnition,
-            'font-bold text-green-600': user.action === USER_ACTION.ChenilleIgnition
+            'font-bold text-red-600': user.action === USER_ACTION.NuclearIgnition
           }"
           class="relative">
           <p class="mb-0 overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <span *ngIf="user.action === USER_ACTION.ChenilleIgnition"> 🎉</span>
             {{ user.name }}
+            <span *ngIf="user.action === USER_ACTION.ChenilleIgnition"> 🎉</span>
           </p>
           <speech-bubble *ngIf="user.effect" [effect]="user.effect" class="absolute -top-[90px] left-[50%] h-[100px] w-[100px]"></speech-bubble>
         </td>
