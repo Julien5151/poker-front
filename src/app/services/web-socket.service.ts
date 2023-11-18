@@ -26,6 +26,7 @@ export class WebSocketService {
       [RoomEffect.Fanfare]: 0,
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
+      [RoomEffect.Chenille]: 0,
     },
   });
   public userEvent$ = new BehaviorSubject<UserId>('');
