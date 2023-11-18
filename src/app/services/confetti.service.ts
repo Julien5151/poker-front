@@ -31,7 +31,7 @@ export class ConfettiService {
   }
 
   public sendConfettisFromTop(): void {
-    setInterval(() => {
+    setTimeout(() => {
       const distances = [0, 0.2, 0.4, 0.6, 0.8, 1];
       distances.forEach((distance) => {
         this.sendConfettis({
@@ -39,7 +39,16 @@ export class ConfettiService {
           origin: { x: distance, y: -0.6 },
         });
       });
-    }, 1000);
+      setInterval(() => {
+        const distances = [0, 0.2, 0.4, 0.6, 0.8, 1];
+        distances.forEach((distance) => {
+          this.sendConfettis({
+            angle: -90,
+            origin: { x: distance, y: -0.6 },
+          });
+        });
+      }, 1000);
+    }, 350);
   }
 
   private sendConfettis(options: confetti.Options): void {
