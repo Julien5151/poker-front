@@ -123,6 +123,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   };
   // User
   public userId: UserId = '';
+  // Activators
   public ignitionButtonActivated = true;
   public chenilleButtonActivated = true;
   // Effects
@@ -222,6 +223,7 @@ export class PokerComponent implements OnInit, OnDestroy {
       this.updateUserEffects();
       this.handleRoomEffects();
       this.updateNuclearEffects();
+      this.updateChenilleEffects();
     });
   }
 
@@ -256,6 +258,13 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.isWasteLand = roomState.roomEffectCoolDowns[RoomEffect.Explosion] > currentTimestamp;
     this.isIgnitionReloading = roomState.roomEffect !== RoomEffect.Ignition && roomState.roomEffectCoolDowns[RoomEffect.Ignition] > currentTimestamp;
     this.isLaunchAuthorized = roomState.users.filter((user) => user.action === UserAction.NuclearIgnition).length >= 3;
+  }
+
+  private updateChenilleEffects(): void {
+    const currentTimestamp = new Date().getTime();
+    const roomState = this.roomState;
+    this.isChenilleIgnitionReloading =
+      roomState.roomEffect !== RoomEffect.ChenilleIgnition && roomState.roomEffectCoolDowns[RoomEffect.ChenilleIgnition] > currentTimestamp;
   }
 
   private updateDataSource(): void {
@@ -298,7 +307,9 @@ export class PokerComponent implements OnInit, OnDestroy {
       this.userEffectControl.reset();
       this.userEffectControl.enable();
     }
-    this.ignitionButtonActivated = !(this.roomState.users.find((user) => user.id === this.userId)?.action === UserAction.NuclearIgnition);
+    const userAction = this.roomState.users.find((user) => user.id === this.userId)?.action;
+    this.ignitionButtonActivated = !userAction;
+    this.chenilleButtonActivated = !userAction;
   }
 
   private handleRoomEffects(): void {
