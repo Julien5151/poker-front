@@ -262,6 +262,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   private updateChenilleEffects(): void {
     const currentTimestamp = new Date().getTime();
     const roomState = this.roomState;
+    if (roomState.roomEffect !== RoomEffect.Chenille) this.confettiService.clearConfettiInterval();
     this.isChenilleIgnitionReloading =
       roomState.roomEffect !== RoomEffect.Chenille && roomState.roomEffectCoolDowns[RoomEffect.Chenille] > currentTimestamp;
   }

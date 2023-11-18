@@ -14,6 +14,8 @@ export class ConfettiService {
     spread: 70,
   };
 
+  private confettiInterval: number | null = null;
+
   public sendConfettisFromBottomCorners(): void {
     const intervals = [0, 500, 1000, 1500, 2000, 2500];
     intervals.forEach((interval) => {
@@ -39,7 +41,7 @@ export class ConfettiService {
           origin: { x: distance, y: -0.6 },
         });
       });
-      setInterval(() => {
+      this.confettiInterval = globalThis.setInterval(() => {
         const distances = [0, 0.2, 0.4, 0.6, 0.8, 1];
         distances.forEach((distance) => {
           this.sendConfettis({
@@ -47,8 +49,12 @@ export class ConfettiService {
             origin: { x: distance, y: -0.6 },
           });
         });
-      }, 1000);
+      }, 1000) as unknown as number;
     }, 350);
+  }
+
+  public clearConfettiInterval(): void {
+    if (this.confettiInterval) globalThis.clearInterval(this.confettiInterval);
   }
 
   private sendConfettis(options: confetti.Options): void {
