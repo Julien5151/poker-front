@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { Subject, debounceTime, filter, firstValueFrom, map, takeUntil } from 'r
 import { SocketEvent } from 'src/app/enums/socket-event.enum';
 import { ConfettiService } from 'src/app/services/confetti.service';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
+import { SpotService } from 'src/app/services/spot.service';
 import { WebSocketService } from 'src/app/services/web-socket.service';
 import { RoomEffect } from 'src/app/shared/enums/room-effect.enum';
 import { UserAction } from 'src/app/shared/enums/user-action.enum';
@@ -48,7 +49,8 @@ import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component'
     ChenilleActivatorComponent,
   ],
 })
-export class PokerComponent implements OnInit, OnDestroy {
+export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChildren('spot', { read: ElementRef }) spots!: QueryList<ElementRef>;
   @Input() roomName = '';
   // Constants
   public readonly VOTE_CARDS: Array<Vote> = [
@@ -152,6 +154,7 @@ export class PokerComponent implements OnInit, OnDestroy {
   constructor(
     private readonly webSocketService: WebSocketService,
     private readonly confettiService: ConfettiService,
+    private readonly spotService: SpotService,
     private readonly localStorageService: LocalStorageService,
     private readonly dialogService: MatDialog,
     private readonly router: Router,
@@ -165,6 +168,11 @@ export class PokerComponent implements OnInit, OnDestroy {
     this.handleNameControlValueChanges();
     this.handleUserEffectControlValueChanges();
     this.localStorageService.setRoomNameToLocalStorage(this.roomName);
+  }
+
+  ngAfterViewInit(): void {
+    const spots = this.spots.toArray();
+    if (spots.length > 0) this.spotService.initSpots(this.spots.map((elRef) => elRef.nativeElement));
   }
 
   public ngOnDestroy(): void {
@@ -262,7 +270,10 @@ export class PokerComponent implements OnInit, OnDestroy {
   private updateChenilleEffects(): void {
     const currentTimestamp = new Date().getTime();
     const roomState = this.roomState;
-    if (roomState.roomEffect !== RoomEffect.Chenille) this.confettiService.clearConfettiInterval();
+    if (roomState.roomEffect !== RoomEffect.Chenille) {
+      this.confettiService.clearConfettiInterval();
+      this.spotService.finishTheShow();
+    }
     this.isChenilleIgnitionReloading =
       roomState.roomEffect !== RoomEffect.Chenille && roomState.roomEffectCoolDowns[RoomEffect.Chenille] > currentTimestamp;
   }
@@ -325,6 +336,7 @@ export class PokerComponent implements OnInit, OnDestroy {
         break;
       case RoomEffect.Chenille:
         this.confettiService.sendConfettisFromTop();
+        this.spotService.startTheShow();
         break;
     }
     this.isRoomEffectPlaying = true;
