@@ -1,6 +1,12 @@
 {
   "name": "poker-philippe-front",
   "version": "1.0.0",
+  "description": "Premium, totally serious, FOSS Poker Planning",
+  "author": "Julien CLAUDEL",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x.x"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -11,7 +17,6 @@
     "lint": "ng lint",
     "update-angular": "ng update @angular/cli @angular/core @angular-eslint/schematics @angular/material"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^17.0.5",
     "@angular/cdk": "^17.0.2",
