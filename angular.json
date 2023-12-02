@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "front-bis:build:production"
+              "buildTarget": "front-bis:build:production"
             },
             "development": {
-              "browserTarget": "front-bis:build:development"
+              "buildTarget": "front-bis:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "front-bis:build"
+            "buildTarget": "front-bis:build"
           }
         },
         "test": {
@@ -108,9 +108,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

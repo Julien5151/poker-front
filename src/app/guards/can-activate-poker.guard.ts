@@ -1,13 +1,13 @@
 import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { JoinRoomDialogComponent } from '../components/dialogs/join-room-dialog/join-room-dialog.component';
 import { StringHelper } from '../helpers/string.helper';
 import { LocalStorageService } from '../services/local-storage.service';
 import { ROOM_NAME_REGEX } from '../shared/regex/room-name.regex';
 
-export const canActivatePoker: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const canActivatePoker: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   // First check if room name is available in URL
   const roomName: string | undefined = route.children[0]?.params['roomName'];
   if (roomName && !!roomName.match(ROOM_NAME_REGEX)) return true;
