@@ -105,6 +105,7 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
     { name: UserEffect.Arretez, message: USER_EFFECTS_MAP[UserEffect.Arretez].message },
     { name: UserEffect.PutainGenial, message: USER_EFFECTS_MAP[UserEffect.PutainGenial].message },
     { name: UserEffect.Leviosa, message: USER_EFFECTS_MAP[UserEffect.Leviosa].message },
+    { name: UserEffect.OhYeah, message: USER_EFFECTS_MAP[UserEffect.OhYeah].message },
   ];
   public readonly USER_EFFECT = UserEffect;
   public readonly USER_ACTION = UserAction;

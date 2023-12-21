@@ -4,4 +4,5 @@ export enum UserEffect {
   Arretez = 'Arretez',
   PutainGenial = 'PutainGenial',
   Leviosa = 'Leviosa',
+  OhYeah = 'OhYeah',
 }

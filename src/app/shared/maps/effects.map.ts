@@ -7,4 +7,5 @@ export const USER_EFFECTS_MAP: Record<UserEffect, UserEffectData> = {
   [UserEffect.Arretez]: { duration: 2500, volume: 0.8, message: 'Arrêtez !' },
   [UserEffect.PutainGenial]: { duration: 1467, volume: 0.2, message: 'Génial !' },
   [UserEffect.Leviosa]: { duration: 3000, volume: 0.5, message: 'Leviosa !' },
+  [UserEffect.OhYeah]: { duration: 3000, volume: 0.4, message: 'Oh Yeah !' },
 };
