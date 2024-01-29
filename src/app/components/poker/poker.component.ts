@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, filter, firstValueFrom, map, takeUntil } from 'rxjs';
@@ -47,6 +48,7 @@ import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component'
     NuclearActivatorComponent,
     CountdownComponent,
     ChenilleActivatorComponent,
+    MatSlideToggleModule,
   ],
 })
 export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -121,6 +123,7 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
       [RoomEffect.Chenille]: 0,
+      [RoomEffect.NoFun]: 0,
     },
   };
   // User
@@ -197,6 +200,10 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public resetVotes(): void {
     this.webSocketService.sendResetVotesMessage();
+  }
+
+  public toggleNoFun(event: MatSlideToggleChange): void {
+    event.checked ? this.webSocketService.sendNoFunOnMessage() : this.webSocketService.sendNoFunOffMessage();
   }
 
   public async joinRoom(): Promise<void> {

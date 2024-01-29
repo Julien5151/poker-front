@@ -7,4 +7,5 @@ export const ROOM_EFFECT_DURATIONS_MAP: Record<RoomEffect, Duration> = {
   [RoomEffect.Ignition]: 10000,
   [RoomEffect.Explosion]: 3000,
   [RoomEffect.Chenille]: 31000,
+  [RoomEffect.NoFun]: 3600000,
 };

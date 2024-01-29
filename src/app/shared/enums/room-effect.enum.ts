@@ -3,4 +3,5 @@ export enum RoomEffect {
   Ignition = 'Ignition',
   Explosion = 'Explosion',
   Chenille = 'Chenille',
+  NoFun = 'NoFun',
 }

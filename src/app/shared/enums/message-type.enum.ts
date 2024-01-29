@@ -7,5 +7,7 @@ export enum MessageType {
   UserActionUpdate = 'user_action_update',
   RoomUpdate = 'room_update',
   HiddenUpdate = 'hidden_update',
+  NoFunOn = 'no_fun_on',
+  NoFunOff = 'no_fun_off',
   ResetVotes = 'reset_votes',
 }

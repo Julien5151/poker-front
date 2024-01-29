@@ -15,7 +15,9 @@ export type WebSocketMessage =
   | UserEffectMessage
   | HiddenMessage
   | ResetVotesMessage
-  | UserActionMessage;
+  | UserActionMessage
+  | NoFunOnMessage
+  | NoFunOffMessage;
 
 export interface RoomMessage {
   event: MessageType.RoomUpdate;
@@ -53,6 +55,14 @@ export interface HiddenMessage {
 
 export interface ResetVotesMessage {
   event: MessageType.ResetVotes;
+}
+
+export interface NoFunOnMessage {
+  event: MessageType.NoFunOn;
+}
+
+export interface NoFunOffMessage {
+  event: MessageType.NoFunOff;
 }
 
 export interface UserActionMessage {

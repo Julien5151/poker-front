@@ -27,6 +27,7 @@ export class WebSocketService {
       [RoomEffect.Ignition]: 0,
       [RoomEffect.Explosion]: 0,
       [RoomEffect.Chenille]: 0,
+      [RoomEffect.NoFun]: 0,
     },
   });
   public userEvent$ = new BehaviorSubject<UserId>('');
@@ -110,6 +111,14 @@ export class WebSocketService {
 
   public sendResetVotesMessage(): void {
     this.sendWebSocketMessage({ event: MessageType.ResetVotes });
+  }
+
+  public sendNoFunOnMessage(): void {
+    this.sendWebSocketMessage({ event: MessageType.NoFunOn });
+  }
+
+  public sendNoFunOffMessage(): void {
+    this.sendWebSocketMessage({ event: MessageType.NoFunOff });
   }
 
   private sendWebSocketMessage(wsMessage: WebSocketMessage): void {
