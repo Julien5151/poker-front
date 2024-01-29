@@ -126,6 +126,8 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
       [RoomEffect.NoFun]: 0,
     },
   };
+  // Classes
+  public funButtonsDisabled = false;
   // User
   public userId: UserId = '';
   // Activators
@@ -334,6 +336,7 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
   private handleRoomEffects(): void {
     const roomEffect = this.roomState.roomEffect;
     if (!roomEffect) {
+      this.funButtonsDisabled = false;
       this.isRoomEffectPlaying = false;
       return;
     }
@@ -341,6 +344,11 @@ export class PokerComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (roomEffect) {
       case RoomEffect.Fanfare:
         this.confettiService.sendConfettisFromBottomCorners();
+        break;
+      case RoomEffect.NoFun:
+        setTimeout(() => {
+          this.funButtonsDisabled = true;
+        }, 5000);
         break;
       case RoomEffect.Chenille:
         this.confettiService.sendConfettisFromTop();

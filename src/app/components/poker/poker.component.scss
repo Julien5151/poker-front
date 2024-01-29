@@ -97,6 +97,21 @@ $spot-top-width: 200px;
   }
 }
 
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.rip {
+  animation: 5s fadeout;
+  opacity: 0;
+}
+
 #full-container.chenille {
   div {
     animation: 1s infinite alternate chenille;

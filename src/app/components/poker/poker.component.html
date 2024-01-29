@@ -8,8 +8,12 @@
         <mat-label>Pseudonyme</mat-label>
         <input matInput [formControl]="nameControl" />
       </mat-form-field>
-      <nuclear-activator [disabled]="!ignitionButtonActivated || isIgnitionReloading" class="ml-3 mt-1"></nuclear-activator>
+      <nuclear-activator
+        [ngClass]="{ rip: roomState.roomEffect === ROOM_EFFECT.NoFun, hidden: funButtonsDisabled }"
+        [disabled]="!ignitionButtonActivated || isIgnitionReloading"
+        class="ml-3 mt-1"></nuclear-activator>
       <chenille-activator
+        [ngClass]="{ rip: roomState.roomEffect === ROOM_EFFECT.NoFun, hidden: funButtonsDisabled }"
         [disabled]="isChenilleIgnitionReloading"
         [chenilleIgnited]="!chenilleButtonActivated"
         class="ml-3 mt-1"></chenille-activator>
@@ -22,7 +26,9 @@
         No fun mode
       </mat-slide-toggle>
     </div>
-    <div class="hidden w-full items-center justify-between md:flex">
+    <div
+      [ngClass]="{ rip: roomState.roomEffect === ROOM_EFFECT.NoFun, hidden: funButtonsDisabled, flex: !funButtonsDisabled }"
+      class="w-full items-center justify-between">
       <button
         *ngFor="let effect of EFFECTS"
         [disabled]="isUserEffectPlaying"
@@ -33,7 +39,7 @@
         {{ effect.message }}
       </button>
     </div>
-    <div class="md:hidden">
+    <!-- <div class="md:hidden">
       <mat-form-field>
         <mat-label>J'ai envie de dire...</mat-label>
         <mat-select [formControl]="userEffectControl">
@@ -42,7 +48,7 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
+    </div> -->
   </div>
   <div class="flex flex-wrap justify-center sm:my-4">
     <button (click)="sendVote(card.value)" class="mx-2 my-2 text-xl" *ngFor="let card of VOTE_CARDS" mat-raised-button color="primary">
@@ -92,6 +98,7 @@
 <audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Fanfare" class="hidden" volume="0.3" autoplay src="../../../assets/sounds/fanfare.mp3"></audio>
 <audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Ignition" class="hidden" volume="1" autoplay src="../../../assets/sounds/alarm.mp3"></audio>
 <audio *ngIf="roomState.roomEffect === ROOM_EFFECT.Chenille" class="hidden" volume="1" autoplay src="../../../assets/sounds/chenille.mp3"></audio>
+<audio *ngIf="roomState.roomEffect === ROOM_EFFECT.NoFun" class="hidden" volume="1" autoplay src="../../../assets/sounds/taps.mp3"></audio>
 <nuclear-explosion *ngIf="roomState.roomEffect === ROOM_EFFECT.Explosion"></nuclear-explosion>
 <countdown *ngIf="roomState.roomEffect === ROOM_EFFECT.Ignition" [launchAuthorized]="isLaunchAuthorized"></countdown>
 <div #spot class="spot-1 pointer-events-none fixed -top-10 left-[10%] hidden -rotate-[15deg] opacity-50"></div>
