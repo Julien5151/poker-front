@@ -107,9 +107,24 @@ $spot-top-width: 200px;
   }
 }
 
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .rip {
   animation: 5s fadeout;
   opacity: 0;
+}
+
+.rise {
+  animation: 10s fadein;
+  opacity: 1;
 }
 
 #full-container.chenille {

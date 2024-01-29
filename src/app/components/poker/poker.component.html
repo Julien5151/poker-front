@@ -109,3 +109,11 @@
 <div #spot class="spot-6 pointer-events-none fixed -top-10 left-[60%] hidden rotate-[15deg] opacity-50"></div>
 <div #spot class="spot-7 pointer-events-none fixed -top-10 left-[70%] hidden -rotate-[15deg] opacity-50"></div>
 <div #spot class="spot-8 pointer-events-none fixed -top-10 left-[80%] hidden rotate-[15deg] opacity-50"></div>
+<img
+  [ngClass]="{ rise: roomState.roomEffect === ROOM_EFFECT.NoFun }"
+  class="pointer-events-none fixed left-[5vw] top-[calc(50vh-256px)] -z-10 opacity-0"
+  src="../../../assets/images/rip.png" />
+<img
+  [ngClass]="{ rise: roomState.roomEffect === ROOM_EFFECT.NoFun }"
+  class="pointer-events-none fixed right-[5vw] top-[calc(50vh-256px)] -z-10 opacity-0"
+  src="../../../assets/images/rip.png" />
