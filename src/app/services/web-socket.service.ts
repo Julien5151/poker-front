@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { SocketConnectionState } from '../enums/socket-connection-state.enum';
 import { SocketEvent } from '../enums/socket-event.enum';
 import { MessageType } from '../shared/enums/message-type.enum';
 import { RoomEffect } from '../shared/enums/room-effect.enum';
@@ -16,6 +17,8 @@ import { UserId } from '../shared/types/user-id.type';
 })
 export class WebSocketService {
   private socket!: WebSocket;
+  private keepAliveIntervalId: number | null = null;
+  private readonly KEEP_ALIVE_CHECK_INTERVAL = 500;
   public socketEvent$ = new Subject<{ type: SocketEvent; message: WebSocketMessage | null }>();
   public roomStateEvent$ = new BehaviorSubject<RoomState>({
     name: '',
@@ -37,6 +40,7 @@ export class WebSocketService {
     this.handleOpen();
     this.handleMessage();
     this.handleClose();
+    this.handleAutoReconnect();
     this.registerEventDispatchers();
   }
 
@@ -83,6 +87,15 @@ export class WebSocketService {
     this.socket.addEventListener(SocketEvent.Close, () => {
       this.initWebSocket();
     });
+  }
+
+  private handleAutoReconnect(): void {
+    this.keepAliveIntervalId = window.setInterval(() => {
+      if (this.socket.readyState === SocketConnectionState.Closed) {
+        if (this.keepAliveIntervalId !== null) window.clearInterval(this.keepAliveIntervalId);
+        this.initWebSocket();
+      }
+    }, this.KEEP_ALIVE_CHECK_INTERVAL);
   }
 
   public sendVoteMessage(vote: VoteValue): void {
