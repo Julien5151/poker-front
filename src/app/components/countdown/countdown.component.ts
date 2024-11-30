@@ -4,7 +4,6 @@ import { interval, take } from 'rxjs';
 
 @Component({
   selector: 'countdown',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.scss'],

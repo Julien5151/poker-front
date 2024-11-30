@@ -10,7 +10,6 @@ import { ROOM_NAME_REGEX } from 'src/app/shared/regex/room-name.regex';
 @Component({
   selector: 'join-room-dialog',
   templateUrl: './join-room-dialog.component.html',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatInputModule, ReactiveFormsModule],
 })
 export class JoinRoomDialogComponent {

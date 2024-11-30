@@ -6,7 +6,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 @Component({
   selector: 'update-available-dialog',
   templateUrl: './update-available-dialog.component.html',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
 export class UpdateAvailableDialogComponent {

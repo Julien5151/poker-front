@@ -6,7 +6,6 @@ import { UserAction } from 'src/app/shared/enums/user-action.enum';
 @Component({
   selector: 'nuclear-activator',
   templateUrl: './nuclear-activator.component.html',
-  standalone: true,
   imports: [CommonModule],
 })
 export class NuclearActivatorComponent {

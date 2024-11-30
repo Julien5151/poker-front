@@ -35,7 +35,6 @@ import { SpeechBubbleComponent } from '../speech-bubble/speech-bubble.component'
   selector: 'poker',
   templateUrl: './poker.component.html',
   styleUrls: ['./poker.component.scss'],
-  standalone: true,
   imports: [
     CommonModule,
     SpeechBubbleComponent,

@@ -6,7 +6,6 @@ import { UserAction } from 'src/app/shared/enums/user-action.enum';
 @Component({
   selector: 'chenille-activator',
   templateUrl: './chenille-activator.component.html',
-  standalone: true,
   imports: [CommonModule],
 })
 export class ChenilleActivatorComponent {
